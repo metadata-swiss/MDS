@@ -1,0 +1,121 @@
+import { dirname, resolve } from 'node:path'
+
+const __dirname = dirname(new URL(import.meta.url).pathname)
+
+// iop-core used by the generated client (api-client/). Override at runtime with NUXT_PUBLIC_IOP_CORE_URL.
+const iopCoreUrl = process.env.NUXT_PUBLIC_IOP_CORE_URL || 'https://core.i14y.d.c.bfs.admin.ch'
+
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  modules: [
+    '@nuxt/eslint',
+    '@nuxt/content',
+    '@nuxtjs/i18n',
+    '@nuxt/image',
+    '@nuxt/icon',
+    './app/modules/cms-assets-sync',
+  ],
+  plugins: [],
+  pages: {
+    enabled: true,
+  },
+  components: {
+    global: true,
+    dirs: ['~/components/content'],
+  },
+  devtools: { enabled: true },
+  css: [
+    '~/assets/main.css',
+  ],
+  vue: {
+    compilerOptions: {
+      isCustomElement: tag => tag.startsWith('swiper-'),
+    },
+  },
+  content: {
+    experimental: { nativeSqlite: true },
+    build: {
+      transformers: [
+        '~~/src/transformers/publication-date.ts',
+      ],
+      markdown: {
+        toc: {
+          depth: 3,
+          searchDepth: 3,
+        },
+      },
+    },
+  },
+  mdc: {
+    components: {
+      map: {
+        a: 'OdsProseA',
+        h2: 'OdsProseH2',
+        h3: 'OdsProseH3',
+        h4: 'OdsProseH4',
+      },
+    },
+  },
+  runtimeConfig: {
+    public: {
+      rootDir: __dirname,
+      iopCoreUrl,
+      // The login button of the top header opens the I14Y input portal. Override at runtime with NUXT_PUBLIC_LOGIN_URL.
+      loginUrl: 'https://input.i14y.d.c.bfs.admin.ch',
+      // Base URL of the IRIs of I14Y resources, for example of organizations (app/utils/iri.ts). Override at runtime
+      // with NUXT_PUBLIC_IRI_URL; production is https://register.ld.admin.ch/i14y.
+      iriUrl: 'https://iri.i14y.d.c.bfs.admin.ch',
+      // Service behind the data preview of tabular distributions. Empty: no preview. Set NUXT_PUBLIC_DATA_PREVIEW_URL.
+      dataPreviewUrl: '',
+      matomo: {
+        url: '',
+        siteId: '',
+      },
+    },
+  },
+  compatibilityDate: '2025-07-15',
+  nitro: {
+    devProxy: {
+      '/admin/': 'http://localhost:5173/admin/',
+    },
+    typescript: {
+      tsConfig: {
+        compilerOptions: {
+          skipLibCheck: true,
+        },
+      },
+    },
+  },
+  cmsAssets: {
+    contentPath: resolve(import.meta.dirname, 'content/assets'),
+    buildPath: resolve(import.meta.dirname, 'public/cms'),
+  },
+  eslint: {
+    config: {
+      stylistic: true,
+    },
+  },
+  i18n: {
+    defaultLocale: 'de',
+    strategy: 'prefix',
+    locales: [
+      { code: 'de', name: 'Deutsch', file: 'de.json' },
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'fr', name: 'Francais', file: 'fr.json' },
+      { code: 'it', name: 'Itlaliano', file: 'it.json' },
+    ],
+    experimental: {
+      localeDetector: 'localeDetector.ts',
+    },
+  },
+  icon: {
+    mode: 'svg',
+    customCollections: [
+      {
+        prefix: 'ods',
+        dir: './app/assets/icons',
+        normalizeIconName: false,
+      },
+    ],
+  },
+})

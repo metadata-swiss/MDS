@@ -75,9 +75,8 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2025-07-15',
   nitro: {
-    devProxy: {
-      '/admin/': 'http://localhost:5173/admin/',
-    },
+    // Decap CMS admin (src/admin) is temporarily disabled. To re-enable, restore its dependencies and
+    // devProxy: { '/admin/': 'http://localhost:5173/admin/' }
     typescript: {
       tsConfig: {
         compilerOptions: {

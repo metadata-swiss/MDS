@@ -74,6 +74,7 @@
 </template>
 
 <script setup lang="ts">
+// @ts-expect-error vue-select 4 ships no type definitions (same setup as the Swiss design system's MultiSelect)
 import VSelect from 'vue-select'
 import { ref, computed, onMounted, h } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
@@ -86,83 +87,46 @@ const selected = defineModel<unknown[]>({
 const Deselect = { render: () => h('span', '×') }
 const OpenIndicator = { render: () => h('span') }
 
-const props = defineProps({
-  loadOptions: {
-    type: Function,
-    default: () => undefined,
-  },
-  closeOnSelect: {
-    type: Boolean,
-    default: () => true,
-  },
-  bare: {
-    type: Boolean,
-    default: () => false,
-  },
-  variant: {
-    type: String,
-    validator: prop => ['outline', 'negative'].includes(prop as string),
-    default: () => 'outline',
-  },
-  size: {
-    type: String,
-    validator: prop => ['sm', 'base', 'lg'].includes(prop as string),
-    default: () => 'base',
-  },
-  disabled: {
-    type: Boolean,
-    default: () => false,
-  },
-  hideLabel: {
-    type: Boolean,
-    default: () => false,
-  },
-  required: {
-    type: Boolean,
-    default: () => false,
-  },
-  label: {
-    type: String,
-    default: () => undefined,
-  },
-  name: {
-    type: String,
-    default: () => undefined,
-  },
-  message: {
-    type: String,
-    default: () => undefined,
-  },
-  messageType: {
-    type: String,
-    validator: prop =>
-      ['error', 'warning', 'success', 'info'].includes(prop as string),
-    default: () => undefined,
-  },
-  options: {
-    type: Array<unknown>,
-    default: () => [],
-  },
-  multiple: {
-    type: Boolean,
-    default: () => true,
-  },
-  placeholder: {
-    type: String,
-    default: () => undefined,
-  },
-  excluded: {
-    type: Array<string>,
-    default: () => [],
-  },
-  selectLimit: {
-    type: Number,
-    default: () => undefined,
-  },
-  taggable: {
-    type: Boolean,
-    default: () => false,
-  },
+interface Props {
+  loadOptions?: (search: string, loading: (isLoading: boolean) => void) => void
+  closeOnSelect?: boolean
+  bare?: boolean
+  variant?: 'outline' | 'negative'
+  size?: 'sm' | 'base' | 'lg'
+  disabled?: boolean
+  hideLabel?: boolean
+  required?: boolean
+  label?: string
+  name?: string
+  message?: string
+  messageType?: 'error' | 'warning' | 'success' | 'info'
+  options?: unknown[]
+  multiple?: boolean
+  placeholder?: string
+  excluded?: string[]
+  selectLimit?: number
+  taggable?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  loadOptions: undefined,
+  closeOnSelect: true,
+  bare: false,
+  variant: 'outline',
+  size: 'base',
+  disabled: false,
+  hideLabel: false,
+  required: false,
+  label: undefined,
+  name: undefined,
+  message: undefined,
+  messageType: undefined,
+  options: () => [],
+  multiple: true,
+  placeholder: undefined,
+  excluded: () => [],
+  selectLimit: undefined,
+  taggable: false,
 })
 
 const selectWrapperClasses = computed(() => {

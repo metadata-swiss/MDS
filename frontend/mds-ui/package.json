@@ -4,12 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "decap": "node scripts/decap-dev.mjs",
     "predev": "shx test -d content || git clone https://github.com/opendata-swiss/opendata-swiss-cms-content-test.git content",
     "dev": "nuxt dev",
     "lint": "eslint --quiet",
     "typecheck": "nuxt typecheck",
-    "prebuild": "vite build src/admin --emptyOutDir",
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -23,34 +21,24 @@
     "@nuxt/image": "^2.1.0",
     "@nuxtjs/i18n": "^10.2.1",
     "@tanstack/vue-query": "^5.104.1",
-    "bootstrap": "^5.3.8",
-    "decap-cms-app": "^3.9.0",
     "is-absolute-url": "^5.0.0",
     "minisearch": "^7.2.0",
     "nuxt": "^4.2.2",
     "piveau-preview-plugin": "^2.3.3",
-    "react-bootstrap-typeahead": "^6.4.1",
     "sass-embedded": "^1.97.1",
     "swiper": "^12.2.0",
     "uuid": "^13.0.0",
-    "vite-plugin-node-polyfills": "^0.24.0",
-    "vite-plugin-static-copy": "^3.1.4",
-    "vue": "^3.5.38",
+    "vue": "^3.5.44",
     "vue-i18n": "^11.2.7",
-    "vue-router": "^5.1.0",
+    "vue-router": "^5.4.0",
     "vue-select": "^4.0.0-beta.6",
     "zod": "^4"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.12.1",
-    "@types/js-yaml": "^4.0.9",
-    "@types/vue-select": "^3.16.8",
     "chokidar": "^4.0.3",
-    "decap-server": "^3.4.0",
     "eslint": "^9.39.2",
-    "eslint-plugin-react": "^7.37.5",
     "husky": "^9.1.7",
-    "js-yaml": "^4.1.1",
     "lint-staged": "^16.2.7",
     "orval": "8.40.0",
     "shx": "^0.4.0",
@@ -61,8 +49,5 @@
     "*.{js,jsx,ts,tsx,vue}": [
       "eslint --fix --quiet"
     ]
-  },
-  "overrides": {
-    "vue-router": "^5.1.0"
   }
 }

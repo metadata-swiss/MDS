@@ -12,7 +12,7 @@ resources:
 
 images:
   - name: i14ycontainers-hkbqadazetaecugr.azurecr.io/mds-ui
-    newTag: 0.1.1
+    newTag: 0.1.2
 
 patches:
   # Reachable through an internal load balancer, like the other services of the cluster. Not public. Allowed sources,
@@ -35,7 +35,8 @@ patches:
       - op: add
         path: /spec/loadBalancerSourceRanges
         value: ["10.0.2.0/24", "10.2.0.0/24", "10.1.10.0/24"]
-  # The store of the backend services, and the keys np-mds-ui-dev:* with the label np-mds-ui-dev (see README).
+  # The store of the backend services: the keys np-mds-ui-dev:* with the label np-mds-ui-dev, and the URLs of the
+  # backend services (shared-dev:I14Y:IopCoreApiUrl, ca-iop-core-dev:I14Y:IriBaseUrl; server/plugins/app-configuration.ts).
   - target:
       kind: Deployment
       name: mds-ui
@@ -47,6 +48,8 @@ patches:
             value: https://bfs-appconfig-i14y-dev.azconfig.io
           - name: APP_CONFIG_APP_NAME
             value: np-mds-ui-dev
+          - name: APP_CONFIG_ENVIRONMENT
+            value: dev
   # bfs-id-i14y-dev (resource group bfs-rg-i14y-dev), the identity of indexsearch too. App Configuration Data Reader
   # on the subscription; federated credential for system:serviceaccount:bfs-np-mds-ui-dev:mds-ui (see README).
   - target:

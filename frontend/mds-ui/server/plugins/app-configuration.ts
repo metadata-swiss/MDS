@@ -12,27 +12,31 @@ export default defineNitroPlugin((nitroApp) => {
   const endpoint = process.env.APP_CONFIG_ENDPOINT
   if (!endpoint) return
 
-  const appName = process.env.APP_CONFIG_APP_NAME
-  if (!appName) throw new Error('APP_CONFIG_APP_NAME is required with APP_CONFIG_ENDPOINT')
+  const app = process.env.APP_CONFIG_APP_NAME
+  const env = process.env.APP_CONFIG_ENVIRONMENT
+  // Environment variable: [key, label]
+  const settings = {
+    NUXT_PUBLIC_LOGIN_URL: [`${app}:AdminUrl`, app],
+    NUXT_PUBLIC_IOP_CORE_URL: [`shared-${env}:I14Y:IopCoreApiUrl`, `shared-${env}`],
+    NUXT_PUBLIC_IRI_URL: [`ca-iop-core-${env}:I14Y:IriBaseUrl`, `ca-iop-core-${env}`],
+  }
 
-  // AKS workload identity sets AZURE_CLIENT_ID, AZURE_TENANT_ID and AZURE_FEDERATED_TOKEN_FILE in the pod.
-  const credential = new WorkloadIdentityCredential()
-  const loaded = load(endpoint, credential, {
-    selectors: [{ keyFilter: `${appName}:*`, labelFilter: appName }],
-    trimKeyPrefixes: [`${appName}:`],
-    keyVaultOptions: { credential },
-  }).then((settings) => {
-    for (const [name, value] of settings) {
-      if (process.env[name] === undefined) process.env[name] = typeof value === 'string' ? value : JSON.stringify(value)
+  const loaded = load(endpoint, new WorkloadIdentityCredential(), {
+    selectors: Object.values(settings).map(([keyFilter, labelFilter]) => ({ keyFilter, labelFilter })),
+  }).then((config) => {
+    for (const [name, [key]] of Object.entries(settings)) {
+      if (process.env[name] !== undefined) continue
+      const value = config.get<string>(key!)
+      if (!value) throw new Error(`Not in App Configuration: ${key}`)
+      // The backend's iop-core URL ends with /api, the paths of the generated client start with /api.
+      process.env[name] = value.replace(/\/api\/?$/, '')
     }
   })
 
-  // Without its settings mds-ui would call the wrong services: stop, and Kubernetes restarts the pod.
   loaded.catch((error) => {
     console.error('Could not load the settings from Azure App Configuration:', error)
     process.exit(1)
   })
-
-  // Nitro doesn't wait for plugins: the requests, the probes included, wait for the settings.
+  // Requests wait for the settings.
   nitroApp.hooks.hook('request', () => loaded)
 })

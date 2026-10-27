@@ -36,6 +36,8 @@ spec:
               value: ""
             - name: APP_CONFIG_APP_NAME
               value: ""
+            - name: APP_CONFIG_ENVIRONMENT
+              value: ""
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true

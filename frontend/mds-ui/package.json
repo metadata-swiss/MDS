@@ -15,6 +15,8 @@
     "api:generate": "orval && node scripts/input-backend-openapi.mjs"
   },
   "dependencies": {
+    "@azure/app-configuration-provider": "^2.6.0",
+    "@azure/identity": "^4.14.0",
     "@certible/use-matomo": "^1.1.0",
     "@nuxt/content": "^3.15.0",
     "@nuxt/icon": "^2.1.1",

@@ -5,8 +5,13 @@ metadata:
 spec:
   replicas: 1
   template:
+    metadata:
+      labels:
+        # Injects the token of the managed identity of the service account (AZURE_* environment variables).
+        azure.workload.identity/use: "true"
     spec:
-      # mds-ui doesn't call the Kubernetes API.
+      serviceAccountName: mds-ui
+      # mds-ui doesn't call the Kubernetes API. The workload identity token is a separate projected volume.
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
@@ -23,15 +28,13 @@ spec:
           ports:
             - name: http
               containerPort: 3000
-          # No secrets: mds-ui only reads public data. The values are set per environment in the overlay.
+          # The settings (NUXT_PUBLIC_IOP_CORE_URL, ...) are read at startup from Azure App Configuration
+          # (server/plugins/app-configuration.ts). Don't set them here: an environment variable, even empty, wins.
+          # The values are set per environment in the overlay.
           env:
-            - name: NUXT_PUBLIC_IOP_CORE_URL
+            - name: APP_CONFIG_ENDPOINT
               value: ""
-            - name: NUXT_PUBLIC_LOGIN_URL
-              value: ""
-            - name: NUXT_PUBLIC_MATOMO_URL
-              value: ""
-            - name: NUXT_PUBLIC_MATOMO_SITE_ID
+            - name: APP_CONFIG_APP_NAME
               value: ""
           securityContext:
             allowPrivilegeEscalation: false

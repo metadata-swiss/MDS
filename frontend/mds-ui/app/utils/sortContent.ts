@@ -32,26 +32,36 @@ export function sortContent<T extends Sortable>(items: T[] | undefined, getSlug:
 
   const sorted: T[] = []
   const visited = new Set<T>()
-  const place = (item: T) => {
-    if (visited.has(item)) {
-      return
-    }
-    visited.add(item)
-    sorted.push(item)
-    const slug = getSlug(item)
-    for (const follower of (slug && followers.get(slug)) || []) {
-      place(follower)
+  // With unique slugs every item is pushed at most once as a start and once as a follower,
+  // so the limit is never reached; it only guarantees that the loop ends
+  let stepsLeft = list.length * 2
+  const placeChain = (start: T) => {
+    const stack = [start]
+    while (stack.length && stepsLeft > 0) {
+      stepsLeft--
+      const item = stack.pop()!
+      if (visited.has(item)) {
+        continue
+      }
+      visited.add(item)
+      sorted.push(item)
+      const slug = getSlug(item)
+      const next = ((slug && followers.get(slug)) || []).filter(follower => !visited.has(follower))
+      // Reversed so that the first follower is placed first
+      stack.push(...next.reverse())
     }
   }
 
-  roots.forEach(place)
+  roots.forEach(placeChain)
 
   // Whatever is left is part of an `after` cycle
   const cyclic = list.filter(item => !visited.has(item))
   if (cyclic.length) {
     console.warn('Cyclic "after" references in content:', cyclic.map(getSlug))
+    cyclic.forEach(placeChain)
+    // Only if the step limit ran out: keep the remaining items in their original order
+    sorted.push(...list.filter(item => !visited.has(item)))
   }
-  cyclic.forEach(place)
 
   return sorted
 }

@@ -1,0 +1,112 @@
+name: mds-ui | Build & Push Docker Image to ACR | Deploy to DEV
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/mds-ui/**'
+      - 'docker/Dockerfile.mds-ui*'
+      - '.github/workflows/mds-ui-dev-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write # pushes the version tag
+
+# One deployment at a time: a newer commit waits for the running one.
+concurrency:
+  group: mds-ui-dev
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: DEV
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the tags, for the version
+
+      # The version is the git tag X.Y.Z: the tag of this commit (re-run), else the latest tag with the patch
+      # incremented, or the version of package.json when it is higher (to start a new minor or major version).
+      - name: Determine version
+        run: |
+          set -euo pipefail
+          TAGS='[0-9]*.[0-9]*.[0-9]*'
+          VERSION=$(git tag --points-at HEAD --list "$TAGS" | sort -V | tail -1)
+          if [ -z "$VERSION" ]; then
+            PACKAGE=$(node -p "require('./frontend/mds-ui/package.json').version")
+            LATEST=$(git tag --list "$TAGS" | sort -V | tail -1)
+            NEXT=$([ -n "$LATEST" ] && echo "$LATEST" | awk -F. '{ print $1 "." $2 "." $3 + 1 }' || echo "$PACKAGE")
+            VERSION=$(printf '%s\n%s\n' "$NEXT" "$PACKAGE" | sort -V | tail -1)
+          fi
+          echo "Version: $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Azure Login (UAMI via OIDC)
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_ACR_UAMI_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_ACR_SUBSCRIPTION_ID }}
+
+      - name: Login to ACR
+        env:
+          AZURE_ACR: ${{ secrets.AZURE_ACR }}
+        run: az acr login --name "${AZURE_ACR}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build & push image
+        env:
+          AZURE_ACR_LOGIN_SERVER: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
+        run: |
+          IMAGE="${AZURE_ACR_LOGIN_SERVER}/mds-ui:${VERSION}"
+          echo "Building and pushing ${IMAGE}"
+          docker buildx build . \
+            --file docker/Dockerfile.mds-ui \
+            --push \
+            --label org.opencontainers.image.version="$VERSION" \
+            --label org.opencontainers.image.revision="${{ github.sha }}" \
+            -t "$IMAGE"
+
+      # Applies the manifests of k8s/overlays/dev with the new image tag, so changes to k8s/ are deployed too.
+      - name: Deploy to DEV
+        working-directory: frontend/mds-ui/k8s
+        env:
+          AKS_RG: ${{ vars.AZURE_AKS_RESOURCE_GROUP }}
+          AKS_CLUSTER: ${{ vars.AZURE_AKS_CLUSTER_NAME }}
+        run: |
+          set -euo pipefail
+          sed -i "s/^    newTag: .*/    newTag: ${VERSION}/" overlays/dev/kustomization.yaml
+          grep -q "newTag: ${VERSION}" overlays/dev/kustomization.yaml
+
+          assert_kubectl_succeeded() {
+            local output="$1" step="$2"
+            echo "$output"
+            if ! grep -qE 'with exitcode=[0-9]+' <<<"$output"; then
+              echo "::error::$step returned no status before Azure stopped waiting; the result is unknown."
+              exit 1
+            fi
+            if ! grep -qE 'with exitcode=0( |$)' <<<"$output"; then
+              echo "::error::$step failed inside the cluster. See the output above."
+              exit 1
+            fi
+          }
+
+          apply=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --file . --command \
+            "kubectl apply -k overlays/dev")
+          assert_kubectl_succeeded "$apply" "apply"
+          rollout=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --command \
+            "kubectl -n bfs-np-mds-ui-dev rollout status deployment/mds-ui --timeout=300s")
+          assert_kubectl_succeeded "$rollout" "rollout status"
+
+      # Only after a successful deployment, so that a failed run gets the same version again.
+      - name: Tag commit with version
+        run: |
+          if git tag --points-at HEAD | grep -qx "$VERSION"; then exit 0; fi
+          git tag "$VERSION"
+          git push origin "$VERSION"

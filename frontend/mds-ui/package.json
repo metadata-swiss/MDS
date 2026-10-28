@@ -1,0 +1,55 @@
+{
+  "name": "metadata-swiss",
+  "version": "0.1.3",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "shx test -d content || git clone https://github.com/opendata-swiss/opendata-swiss-cms-content-test.git content",
+    "dev": "nuxt dev",
+    "lint": "eslint --quiet",
+    "typecheck": "nuxt typecheck",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "api:generate": "orval && node scripts/input-backend-openapi.mjs"
+  },
+  "dependencies": {
+    "@azure/app-configuration-provider": "^2.6.0",
+    "@azure/identity": "^4.14.0",
+    "@certible/use-matomo": "^1.1.0",
+    "@nuxt/content": "^3.15.0",
+    "@nuxt/icon": "^2.1.1",
+    "@nuxt/image": "^2.1.0",
+    "@nuxtjs/i18n": "^10.2.1",
+    "@tanstack/vue-query": "^5.104.1",
+    "is-absolute-url": "^5.0.0",
+    "minisearch": "^7.2.0",
+    "nuxt": "^4.2.2",
+    "piveau-preview-plugin": "^2.3.3",
+    "sass-embedded": "^1.97.1",
+    "swiper": "^12.2.0",
+    "uuid": "^13.0.0",
+    "vue": "^3.5.44",
+    "vue-i18n": "^11.2.7",
+    "vue-router": "^5.4.0",
+    "vue-select": "^4.0.0-beta.6",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.12.1",
+    "chokidar": "^4.0.3",
+    "eslint": "^10.13.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "orval": "8.45.0",
+    "shx": "^0.4.0",
+    "typescript": "^5",
+    "vue-tsc": "^3.3.7"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,vue}": [
+      "eslint --fix --quiet"
+    ]
+  }
+}

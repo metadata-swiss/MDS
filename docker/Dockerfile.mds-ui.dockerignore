@@ -1,0 +1,16 @@
+# Build context of docker/Dockerfile.mds-ui (the repository root). Docker uses this file instead of a root .dockerignore
+# for this Dockerfile only.
+.git/
+.local/
+.qodo/
+*.md
+
+# Installed and built in the image: local copies are for Windows, and `git clone ... content` needs an empty folder.
+**/node_modules/
+frontend/mds-ui/.nuxt/
+frontend/mds-ui/.output/
+frontend/mds-ui/.data/
+frontend/mds-ui/content/
+
+# Local settings, not for the image.
+frontend/mds-ui/.env

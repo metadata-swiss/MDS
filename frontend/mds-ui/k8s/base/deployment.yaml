@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mds-ui
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        # Injects the token of the managed identity of the service account (AZURE_* environment variables).
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: mds-ui
+      # mds-ui doesn't call the Kubernetes API. The workload identity token is a separate projected volume.
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        # The user "node" of the node image.
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: mds-ui
+          # The tag is set per environment in the overlay (images).
+          image: i14ycontainers-hkbqadazetaecugr.azurecr.io/mds-ui
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          # The settings (NUXT_PUBLIC_IOP_CORE_URL, ...) are read at startup from Azure App Configuration
+          # (server/plugins/app-configuration.ts). Don't set them here: an environment variable, even empty, wins.
+          # The values are set per environment in the overlay.
+          env:
+            - name: APP_CONFIG_ENDPOINT
+              value: ""
+            - name: APP_CONFIG_APP_NAME
+              value: ""
+            - name: APP_CONFIG_ENVIRONMENT
+              value: ""
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          # The only writable places: Nuxt Content writes its SQLite database to .data (set in the Dockerfile with
+          # NUXT_CONTENT_DATABASE_FILENAME), Node writes temporary files to /tmp.
+          volumeMounts:
+            - name: data
+              mountPath: /app/.data
+            - name: tmp
+              mountPath: /tmp
+          # A first guess; adjust after watching the real usage (kubectl top pod).
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 768Mi
+          startupProbe:
+            httpGet:
+              path: /api/healthz
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/healthz
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}

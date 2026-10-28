@@ -1,0 +1,61 @@
+# DEV: AKS cluster aks-i14y-search-dev (resource group rg-i14y-aks-dev), namespace bfs-np-mds-ui-dev.
+#   kubectl apply -k frontend/mds-ui/k8s/overlays/dev
+# Behind the BIT proxy, kubectl reaches the cluster only without the proxy: set NO_PROXY to include .azmk8s.io.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: bfs-np-mds-ui-dev
+
+resources:
+  - namespace.yaml
+  - ../../base
+
+images:
+  - name: i14ycontainers-hkbqadazetaecugr.azurecr.io/mds-ui
+    newTag: 0.1.2
+
+patches:
+  # Reachable through an internal load balancer, like the other services of the cluster. Not public. Allowed sources,
+  # both in VNets peered with vnet-i14y-aks-dev:
+  # - 10.0.2.0/24: vnet-i14y-preprod-shared, jump host bfs-vm-i14y-db-jumphost-dev (Linux, 10.0.2.4);
+  # - 10.2.0.0/24: vnet-i14y-management, jump host vm-i14y-jumphost (Windows, 10.2.0.4);
+  # - 10.1.10.0/24: vnet-i14y-dev, subnet agw of the Application Gateway agw-i14y-dev (HTTP:80 to this service).
+  - target:
+      kind: Service
+      name: mds-ui
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+          service.beta.kubernetes.io/azure-load-balancer-ipv4: 10.71.0.10
+      - op: replace
+        path: /spec/type
+        value: LoadBalancer
+      - op: add
+        path: /spec/loadBalancerSourceRanges
+        value: ["10.0.2.0/24", "10.2.0.0/24", "10.1.10.0/24"]
+  # The store of the backend services: the keys np-mds-ui-dev:* with the label np-mds-ui-dev, and the URLs of the
+  # backend services (shared-dev:I14Y:IopCoreApiUrl, ca-iop-core-dev:I14Y:IriBaseUrl; server/plugins/app-configuration.ts).
+  - target:
+      kind: Deployment
+      name: mds-ui
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env
+        value:
+          - name: APP_CONFIG_ENDPOINT
+            value: https://bfs-appconfig-i14y-dev.azconfig.io
+          - name: APP_CONFIG_APP_NAME
+            value: np-mds-ui-dev
+          - name: APP_CONFIG_ENVIRONMENT
+            value: dev
+  # bfs-id-i14y-dev (resource group bfs-rg-i14y-dev), the identity of indexsearch too. App Configuration Data Reader
+  # on the subscription; federated credential for system:serviceaccount:bfs-np-mds-ui-dev:mds-ui (see README).
+  - target:
+      kind: ServiceAccount
+      name: mds-ui
+    patch: |-
+      - op: replace
+        path: /metadata/annotations/azure.workload.identity~1client-id
+        value: e425811b-87ae-4197-915e-da0712d725f6

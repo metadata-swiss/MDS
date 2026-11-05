@@ -978,15 +978,6 @@
               "type": "string",
               "format": "uuid"
             }
-          },
-          {
-            "name": "includeCodeListEntries",
-            "in": "query",
-            "description": "Valid only for concepts of the type CodeList.",
-            "schema": {
-              "type": "boolean",
-              "default": false
-            }
           }
         ],
         "responses": {
@@ -3674,6 +3665,8 @@
             "in": "query",
             "description": "",
             "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
               "type": "integer",
               "format": "int32"
             },
@@ -5165,7 +5158,7 @@
         "tags": [
           "Concepts"
         ],
-        "summary": "Exports codelist entries from a concept in CSV format",
+        "summary": "Exports codelist entries from a concept in Json or CSV format.",
         "parameters": [
           {
             "name": "id",
@@ -5237,6 +5230,71 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
               },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/Concepts/{id}/export": {
+      "get": {
+        "tags": [
+          "Concepts"
+        ],
+        "summary": "Exports a concept in Json format.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the concept",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "dataFormat",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DataFormat"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
@@ -17514,6 +17572,28 @@
             }
           },
           {
+            "name": "keywords",
+            "in": "query",
+            "description": "Only results matching one of the specified keywords are returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "licenses",
+            "in": "query",
+            "description": "Only results with at least one distribution providing one of the specified licenses are returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "levels",
             "in": "query",
             "description": "Only results with one of the specified publication levels (Unit, I14Y Public) are returned",
@@ -17624,6 +17704,8 @@
             "in": "query",
             "description": "The size of each result page",
             "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
               "type": "integer",
               "format": "int32"
             },
@@ -17736,9 +17818,20 @@
             }
           },
           {
+            "name": "keywords",
+            "in": "query",
+            "description": "Only results matching one of the specified keywords are counted",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "levels",
             "in": "query",
-            "description": "Only results with one of the specified publication levels (Unit, I14Y Public) are counted",
+            "description": "Only results with one of the specified publication levels  are counted",
             "schema": {
               "type": "array",
               "items": {
@@ -17749,11 +17842,22 @@
           {
             "name": "levelProposals",
             "in": "query",
-            "description": "Only results with the proposal publication (I14Y Public) is returned",
+            "description": "Only results with the proposal publication is returned",
             "schema": {
               "type": "array",
               "items": {
                 "$ref": "#/components/schemas/PublicationLevel"
+              }
+            }
+          },
+          {
+            "name": "licenses",
+            "in": "query",
+            "description": "Only results with at least one distribution providing one of the specified licenses are counted",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
               }
             }
           },
@@ -17911,6 +18015,172 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Search/reindex": {
+      "post": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Starts a full reindex in the IndexSearch service and returns at once; follow it with the status route.",
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexStatusResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexStatusResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Search/reindex/status": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Says whether a reindex is running and how the last one ended.",
+        "responses": {
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexStatusResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexStatusResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexStatusResponse"
                 }
               }
             }
@@ -18330,6 +18600,7 @@
     "schemas": {
       "AgentInputModel": {
         "required": [
+          "contactPoint",
           "identifier",
           "name",
           "prefLabel"
@@ -18380,12 +18651,8 @@
             },
             "nullable": true
           },
-          "subAgents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/IdModel"
-            },
-            "nullable": true
+          "subOrganizationOf": {
+            "$ref": "#/components/schemas/IdModel"
           },
           "uid": {
             "type": "string",
@@ -18454,14 +18721,10 @@
             },
             "nullable": true
           },
-          "subAgents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/IdNameModel"
-            },
-            "nullable": true
+          "subOrganizationOf": {
+            "$ref": "#/components/schemas/IdNameModel"
           },
-          "subAgentOf": {
+          "subOrganizations": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IdNameModel"
@@ -18487,6 +18750,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/AgentModel"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -19037,6 +19304,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/ConceptType"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -19045,6 +19316,12 @@
         "enum": [
           "Manual",
           "Automated"
+        ],
+        "type": "string"
+      },
+      "DataFormat": {
+        "enum": [
+          "Json"
         ],
         "type": "string"
       },
@@ -19154,7 +19431,7 @@
           "themes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CodeInputModel"
+              "$ref": "#/components/schemas/ThemeInputModel"
             },
             "nullable": true
           },
@@ -19521,10 +19798,6 @@
             "$ref": "#/components/schemas/DcatCatalogResourceModel"
           },
           "themes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcatCatalogThemeInputModel"
-            },
             "nullable": true
           }
         },
@@ -19566,24 +19839,6 @@
           },
           "resourceType": {
             "$ref": "#/components/schemas/DcatCatalogType"
-          }
-        },
-        "additionalProperties": false
-      },
-      "DcatCatalogThemeInputModel": {
-        "required": [
-          "code",
-          "themeTaxonomy"
-        ],
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "nullable": true
-          },
-          "themeTaxonomy": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -19797,7 +20052,7 @@
           "themes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CodeInputModel"
+              "$ref": "#/components/schemas/ThemeInputModel"
             },
             "nullable": true
           },
@@ -20495,6 +20750,44 @@
         },
         "additionalProperties": false
       },
+      "IndexStatusResponse": {
+        "type": "object",
+        "properties": {
+          "running": {
+            "type": "boolean"
+          },
+          "operation": {
+            "type": "string",
+            "nullable": true
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "elapsed": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "lastSucceeded": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "catalog": {
+            "$ref": "#/components/schemas/ReindexCounts"
+          },
+          "codeLists": {
+            "$ref": "#/components/schemas/ReindexCounts"
+          }
+        },
+        "additionalProperties": false
+      },
       "IopConceptInputModel": {
         "required": [
           "conceptType",
@@ -20599,7 +20892,7 @@
           "themes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CodeInputModel"
+              "$ref": "#/components/schemas/ThemeInputModel"
             },
             "nullable": true
           },
@@ -20631,13 +20924,6 @@
         ],
         "type": "object",
         "properties": {
-          "codeListEntries": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CodeListEntryModel"
-            },
-            "nullable": true
-          },
           "codeListEntryDefaultSortProperty": {
             "$ref": "#/components/schemas/CodeListEntrySortProperty"
           },
@@ -20970,7 +21256,7 @@
           "themes": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CodeInputModel"
+              "$ref": "#/components/schemas/ThemeInputModel"
             },
             "nullable": true
           },
@@ -21302,7 +21588,7 @@
           "sectors": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CodeInputModel"
+              "$ref": "#/components/schemas/ThemeInputModel"
             },
             "nullable": true
           },
@@ -21316,7 +21602,7 @@
           "thematicAreas": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CodeInputModel"
+              "$ref": "#/components/schemas/ThemeInputModel"
             },
             "nullable": true
           },
@@ -21515,6 +21801,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/PublicationLevel"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -21580,6 +21870,36 @@
           },
           "value": {
             "$ref": "#/components/schemas/RegistrationStatus"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReindexCounts": {
+        "type": "object",
+        "properties": {
+          "documentsSent": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentsWritten": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "batchesFailed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "structuresResolved": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "reuseResolved": {
+            "type": "boolean",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -21856,6 +22176,20 @@
             },
             "nullable": true
           },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StringSearchCountResultItem"
+            },
+            "nullable": true
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VocabularyEntryModelSearchCountResultItem"
+            },
+            "nullable": true
+          },
           "lifeEvents": {
             "type": "array",
             "items": {
@@ -21948,6 +22282,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/SearchResourceType"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -21991,6 +22329,13 @@
           },
           "identifier": {
             "type": "string",
+            "nullable": true
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VocabularyEntryModel"
+            },
             "nullable": true
           },
           "lifeEvents": {
@@ -22070,6 +22415,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/SearchStructureOption"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -22094,6 +22443,10 @@
           "value": {
             "type": "string",
             "nullable": true
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -22111,6 +22464,24 @@
           "modifiedAt": {
             "type": "string",
             "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ThemeInputModel": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "uri": {
+            "type": "string",
+            "nullable": true
+          },
+          "vocabularyIdentifier": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -22258,6 +22629,10 @@
           "uri": {
             "type": "string",
             "nullable": true
+          },
+          "vocabularyIdentifier": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -22274,6 +22649,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/VocabularyEntryModel"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

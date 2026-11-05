@@ -3,7 +3,7 @@
 // Run by `npm run api:generate`, after orval.
 import { readFileSync, writeFileSync } from 'node:fs'
 
-const SOURCE = '../../backend/src/Core/Bfs.Iop.Core.ApiClient/Generated/IopCoreApiClient.swagger.json'
+const SOURCE = '../../build/apiClient/IopCoreApiClient.swagger.json'
 const PATHS = 'api-client/input-backend.paths.json'
 const TARGET = 'api-client/generated/input-backend.openapi.json'
 

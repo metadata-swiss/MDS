@@ -24,5 +24,5 @@ export function organizationLabel(organization: AgentModel, lang: string) {
  * Get the id of the parent organization, if any.
  */
 export function getParentId(organization: AgentModel) {
-  return organization.subAgentOf?.[0]?.id
+  return organization.subOrganizationOf?.id
 }

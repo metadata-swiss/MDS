@@ -13,8 +13,8 @@ import type { FacetGroup } from '~/composables/useFacets'
 import { organizationLabel } from '~/model/organizations'
 import { localize } from '~/utils/getCurrentTranslation'
 
-// iop-core gap [G1] [G2]: the old portal also offered the facets license and keywords.
-export const datasetFacets = ['categories', 'organization', 'format'] as const
+export const datasetFacets = ['categories', 'organization', 'format', 'license', 'keywords'] as const
+const KEYWORD_MIN_COUNT = 1
 
 // All public datasets of iop-core are shown, not only those of the opendata.swiss catalog.
 const OPEN_DATASETS = {
@@ -59,9 +59,10 @@ export function useDatasetsSearch() {
       themes: selectedFacets.categories?.value,
       publishers: selectedFacets.organization?.value,
       formats: selectedFacets.format?.value,
+      licenses: selectedFacets.license?.value,
+      keywords: selectedFacets.keywords?.value,
     }))
 
-    // iop-core gap [G3]: GET /api/Search has no sort parameter; results are sorted by relevance.
     const searchParams = computed<GetSearchParams>(() => ({
       ...countParams.value,
       page: queryParams.page.value + 1,
@@ -85,6 +86,7 @@ export function useDatasetsSearch() {
       return computed<FacetGroup[]>(() => {
         const language = toValue(lang) ?? locale.value
         const counts = countQuery.data.value
+        const selectedKeywords = selectedFacets.keywords?.value ?? []
 
         return [
           {
@@ -101,6 +103,20 @@ export function useDatasetsSearch() {
             id: 'format',
             title: t('message.dataset_detail.format'),
             items: (counts?.formats ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language) || item.value.code || '', count: item.count ?? 0 })),
+          },
+          {
+            id: 'license',
+            title: t('message.dataset_detail.properties.license'),
+            items: (counts?.licenses ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language) || item.value.code || '', count: item.count ?? 0 })),
+          },
+          {
+            id: 'keywords',
+            title: t('message.dataset_detail.keywords'),
+            // iop-core counts the keywords of all languages together, in lower case.
+            // A selected keyword stays in the list, so that the filter still shows it as selected and doesn't drop it.
+            items: (counts?.keywords ?? [])
+              .filter(item => item.value && ((item.count ?? 0) >= KEYWORD_MIN_COUNT || selectedKeywords.includes(item.value)))
+              .map(item => ({ id: item.value ?? '', title: item.value ?? '', count: item.count ?? 0 })),
           },
         ]
       })

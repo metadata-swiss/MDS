@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, toRefs, useTemplateRef, watch, type ComponentPublicInstance } from 'vue'
 
-import { useRoute, useRouter } from 'vue-router'
+import { type LocationQuery, useRoute, useRouter } from 'vue-router'
 import { useI18n } from '#imports'
 
 import { useDatasetsSearch, datasetFacets } from '~/composables/useDatasets'
@@ -9,6 +9,7 @@ import OdsBreadcrumbs, { type BreadcrumbItem } from '~/components/OdsBreadcrumbs
 import OdsPagination from '~/components/OdsPagination.vue'
 import OdsDatasetList from '~/components/dataset/dataset-list/OdsDatasetList.vue'
 import OdsListCardToggle from '~/components/dataset/list-card-toggle/OdsListCardToggle.vue'
+import OdsSortSelect, { type SortOption } from '~/components/dataset/OdsSortSelect.vue'
 import { homePageBreadcrumb } from '~/composables/breadcrumbs'
 import SvgIcon from '~/components/SvgIcon.vue'
 import { useSeoMeta } from 'nuxt/app'
@@ -19,6 +20,7 @@ import { syncFacetsFromRoute, useActiveFacets, useFacets, useFacetSync } from '~
 import OdsSearchPanel from '~/components/OdsSearchPanel.vue'
 import OdsSearchResults from '~/components/OdsSearchResults.vue'
 import type { AppLanguage } from '~/constants/langages'
+import { CatalogSearchSort } from '~~/api-client/generated/iop-core'
 
 const { t, locale } = useI18n()
 
@@ -41,15 +43,31 @@ function resetSearch() {
     facetRefs[facet].value = []
   })
   queryParams.page = 0
+  queryParams.sort = undefined
 }
 
-// iop-core gap [G3]: GET /api/Search can't sort, so the sort select (relevance, title, modification date) is hidden.
+function toSortOption(value: unknown): CatalogSearchSort | undefined {
+  return Object.values(CatalogSearchSort).find(option => option === value)
+}
+
+function sortQuery(sort: CatalogSearchSort | undefined): LocationQuery {
+  return sort ? { sort } : {}
+}
 
 const queryParams = reactive({
   limit: 10,
   page: route.query.page ? Number(route.query.page) - 1 : 0,
   q: Array.isArray(route.query.q) ? route.query.q.join(' ') : route.query.q || '',
+  sort: toSortOption(route.query.sort),
 })
+
+const sortOptions = computed<SortOption[]>(() => [
+  { value: CatalogSearchSort.Relevance, text: t('message.dataset_search.sort_by.relevance') },
+  { value: CatalogSearchSort.TitleAscending, text: t('message.dataset_search.sort_by.title_asc') },
+  { value: CatalogSearchSort.TitleDescending, text: t('message.dataset_search.sort_by.title_desc') },
+  { value: CatalogSearchSort.ModifiedNewest, text: t('message.dataset_search.sort_by.date_modified_desc') },
+  { value: CatalogSearchSort.ModifiedOldest, text: t('message.dataset_search.sort_by.date_modified_asc') },
+])
 
 const { useSearch } = useDatasetsSearch()
 const {
@@ -109,7 +127,12 @@ function goToPage(newPage: number | string, query = route.query) {
 const searchResultsElement = useTemplateRef<ComponentPublicInstance>('search-results')
 
 const searchInput = ref(queryParams.q)
-const onSearch = () => goToPage(1, { q: searchInput.value })
+const onSearch = () => goToPage(1, { q: searchInput.value, ...sortQuery(queryParams.sort) })
+
+const selectedSort = computed({
+  get: () => queryParams.sort ?? '',
+  set: (value: string) => goToPage(1, { ...route.query, ...sortQuery(toSortOption(value)) }),
+})
 
 const homeBreadcrumb = homePageBreadcrumb(t)
 const datasetBreadcrumb = computed<BreadcrumbItem>(() => {
@@ -165,6 +188,10 @@ watch(() => route.query, (queryParam) => {
   }
 })
 
+watch(() => route.query.sort, (sort) => {
+  queryParams.sort = toSortOption(sort)
+})
+
 watch(() => route.query.q, (searchTerm) => {
   if (searchTerm) {
     searchInput.value = Array.isArray(searchTerm) ? searchTerm.join(' ') : searchTerm
@@ -212,13 +239,11 @@ await suspense()
         :results-count="getSearchResultsCount"
       >
         <template #header-right>
-          <!-- iop-core gap [G3]: no sorting in GET /api/Search.
           <OdsSortSelect
             v-model="selectedSort"
             :options="sortOptions"
           />
           <div class="separator separator--vertical" />
-          -->
           <OdsListCardToggle v-model="listType" />
         </template>
 

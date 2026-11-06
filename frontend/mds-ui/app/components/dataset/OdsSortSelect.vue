@@ -6,6 +6,7 @@
         v-model="selectedSort"
         class="input--outline input--sm"
         name="select-name"
+        :aria-label="t('message.dataset_search.sort')"
       >
         <option :disabled="true" :value="''">
           {{ t('message.dataset_search.sort') }}

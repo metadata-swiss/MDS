@@ -265,6 +265,17 @@ export const BusinessRole = {
   SwissDataSteward: 'SwissDataSteward',
 } as const;
 
+export type CatalogSearchSort = typeof CatalogSearchSort[keyof typeof CatalogSearchSort];
+
+
+export const CatalogSearchSort = {
+  Relevance: 'Relevance',
+  TitleAscending: 'TitleAscending',
+  TitleDescending: 'TitleDescending',
+  ModifiedNewest: 'ModifiedNewest',
+  ModifiedOldest: 'ModifiedOldest',
+} as const;
+
 export interface IdentifierInputModel {
   /** @nullable */
   identifier: string | null;
@@ -2113,6 +2124,10 @@ themes?: string[];
  * Only results with one of the specified types are returned
  */
 types?: SearchResourceType[];
+/**
+ * The order of the results; relevance when not specified
+ */
+sort?: CatalogSearchSort;
 /**
  * The number of the result page to return
  */

@@ -80,7 +80,7 @@ export interface IdModel {
 
 export interface AgentInputModel {
   classification?: CodeInputModel;
-  contactPoint?: VCardModel;
+  contactPoint: VCardModel;
   description?: MultiLanguageModel;
   /** @nullable */
   homePage?: string | null;
@@ -94,8 +94,7 @@ export interface AgentInputModel {
   spatial?: string[] | null;
   /** @nullable */
   spatialCH?: CodeInputModel[] | null;
-  /** @nullable */
-  subAgents?: IdModel[] | null;
+  subOrganizationOf?: IdModel;
   /** @nullable */
   uid?: string | null;
 }
@@ -106,6 +105,8 @@ export interface VocabularyEntryModel {
   name?: MultiLanguageModel;
   /** @nullable */
   uri?: string | null;
+  /** @nullable */
+  vocabularyIdentifier?: string | null;
 }
 
 export type CreationType = typeof CreationType[keyof typeof CreationType];
@@ -146,10 +147,9 @@ export interface AgentModel {
   spatial?: string[] | null;
   /** @nullable */
   spatialCH?: VocabularyEntryModel[] | null;
+  subOrganizationOf?: IdNameModel;
   /** @nullable */
-  subAgents?: IdNameModel[] | null;
-  /** @nullable */
-  subAgentOf?: IdNameModel[] | null;
+  subOrganizations?: IdNameModel[] | null;
   /** @nullable */
   uid?: string | null;
 }
@@ -157,6 +157,8 @@ export interface AgentModel {
 export interface AgentModelSearchCountResultItem {
   count?: number;
   value: AgentModel;
+  /** @nullable */
+  searchKey?: string | null;
 }
 
 export type SearchResourceType = typeof SearchResourceType[keyof typeof SearchResourceType];
@@ -173,6 +175,8 @@ export const SearchResourceType = {
 export interface SearchResourceTypeSearchCountResultItem {
   count?: number;
   value: SearchResourceType;
+  /** @nullable */
+  searchKey?: string | null;
 }
 
 export interface AgentStatisticsResult {
@@ -259,6 +263,17 @@ export const BusinessRole = {
   Submitter: 'Submitter',
   StewardshipOrganisationViewer: 'StewardshipOrganisationViewer',
   SwissDataSteward: 'SwissDataSteward',
+} as const;
+
+export type CatalogSearchSort = typeof CatalogSearchSort[keyof typeof CatalogSearchSort];
+
+
+export const CatalogSearchSort = {
+  Relevance: 'Relevance',
+  TitleAscending: 'TitleAscending',
+  TitleDescending: 'TitleDescending',
+  ModifiedNewest: 'ModifiedNewest',
+  ModifiedOldest: 'ModifiedOldest',
 } as const;
 
 export interface IdentifierInputModel {
@@ -426,6 +441,8 @@ export const ConceptType = {
 export interface ConceptTypeSearchCountResultItem {
   count?: number;
   value: ConceptType;
+  /** @nullable */
+  searchKey?: string | null;
 }
 
 export interface KeywordModel {
@@ -437,6 +454,15 @@ export interface KeywordModel {
 export interface EmailInputModel {
   /** @nullable */
   email: string | null;
+}
+
+export interface ThemeInputModel {
+  /** @nullable */
+  code?: string | null;
+  /** @nullable */
+  uri?: string | null;
+  /** @nullable */
+  vocabularyIdentifier?: string | null;
 }
 
 export interface DataServiceInputModel {
@@ -470,7 +496,7 @@ export interface DataServiceInputModel {
   /** @nullable */
   servesDatasets?: IdModel[] | null;
   /** @nullable */
-  themes?: CodeInputModel[] | null;
+  themes?: ThemeInputModel[] | null;
   title: MultiLanguageModel;
   /** @nullable */
   version?: string | null;
@@ -632,17 +658,9 @@ export interface DcatCatalogResourceModel {
   resourceType?: DcatCatalogType;
 }
 
-export interface DcatCatalogThemeInputModel {
-  /** @nullable */
-  code: string | null;
-  /** @nullable */
-  themeTaxonomy: string | null;
-}
-
 export interface DcatCatalogRecordInputModel {
   primaryTopic: DcatCatalogResourceModel;
-  /** @nullable */
-  themes?: DcatCatalogThemeInputModel[] | null;
+  themes?: unknown;
 }
 
 export interface DcatCatalogThemeModel {
@@ -775,7 +793,7 @@ export interface DcatDatasetInputModel {
   /** @nullable */
   temporalCoverage?: PeriodOfTimeModel[] | null;
   /** @nullable */
-  themes?: CodeInputModel[] | null;
+  themes?: ThemeInputModel[] | null;
   title: MultiLanguageModel;
   /** @nullable */
   version?: string | null;
@@ -953,6 +971,32 @@ export interface IdentifierVersionExistsModel {
   publisher?: AgentModel;
 }
 
+export interface ReindexCounts {
+  documentsSent?: number;
+  documentsWritten?: number;
+  batchesFailed?: number;
+  /** @nullable */
+  structuresResolved?: boolean | null;
+  /** @nullable */
+  reuseResolved?: boolean | null;
+}
+
+export interface IndexStatusResponse {
+  running?: boolean;
+  /** @nullable */
+  operation?: string | null;
+  /** @nullable */
+  startedAt?: string | null;
+  /** @nullable */
+  finishedAt?: string | null;
+  /** @nullable */
+  elapsed?: string | null;
+  /** @nullable */
+  lastSucceeded?: boolean | null;
+  catalog?: ReindexCounts;
+  codeLists?: ReindexCounts;
+}
+
 export interface IopConceptInputModel {
   codeListEntryDefaultSortProperty?: CodeListEntrySortProperty;
   codeListEntryValueType?: CodeListEntryValueType;
@@ -987,7 +1031,7 @@ export interface IopConceptInputModel {
   responsibleDeputy?: EmailInputModel;
   responsiblePerson: EmailInputModel;
   /** @nullable */
-  themes?: CodeInputModel[] | null;
+  themes?: ThemeInputModel[] | null;
   /** @nullable */
   validFrom?: string | null;
   /** @nullable */
@@ -1116,7 +1160,7 @@ export interface MappingTableInputModel {
   source: UriInputModel;
   target: UriInputModel;
   /** @nullable */
-  themes?: CodeInputModel[] | null;
+  themes?: ThemeInputModel[] | null;
   /** @nullable */
   validFrom?: string | null;
   /** @nullable */
@@ -1213,11 +1257,11 @@ export interface PublicServiceInputModel {
   responsibleDeputy?: EmailInputModel;
   responsiblePerson?: EmailInputModel;
   /** @nullable */
-  sectors?: CodeInputModel[] | null;
+  sectors?: ThemeInputModel[] | null;
   /** @nullable */
   spatial?: string[] | null;
   /** @nullable */
-  thematicAreas?: CodeInputModel[] | null;
+  thematicAreas?: ThemeInputModel[] | null;
   /** @nullable */
   spatialCH?: CodeInputModel[] | null;
 }
@@ -1275,6 +1319,8 @@ export interface PublicationLevelInfoModel {
 export interface PublicationLevelSearchCountResultItem {
   count?: number;
   value: PublicationLevel;
+  /** @nullable */
+  searchKey?: string | null;
 }
 
 export type RdfExportFormat = typeof RdfExportFormat[keyof typeof RdfExportFormat];
@@ -1298,6 +1344,8 @@ export interface RegistrationStatusInfoModel {
 export interface RegistrationStatusSearchCountResultItem {
   count?: number;
   value: RegistrationStatus;
+  /** @nullable */
+  searchKey?: string | null;
 }
 
 export interface RelationsCountModel {
@@ -1384,6 +1432,16 @@ export interface SchemaGraph {
 export interface VocabularyEntryModelSearchCountResultItem {
   count?: number;
   value: VocabularyEntryModel;
+  /** @nullable */
+  searchKey?: string | null;
+}
+
+export interface StringSearchCountResultItem {
+  count?: number;
+  /** @nullable */
+  value: string | null;
+  /** @nullable */
+  searchKey?: string | null;
 }
 
 export type SearchStructureOption = typeof SearchStructureOption[keyof typeof SearchStructureOption];
@@ -1397,12 +1455,8 @@ export const SearchStructureOption = {
 export interface SearchStructureOptionSearchCountResultItem {
   count?: number;
   value: SearchStructureOption;
-}
-
-export interface StringSearchCountResultItem {
-  count?: number;
   /** @nullable */
-  value: string | null;
+  searchKey?: string | null;
 }
 
 export interface SearchCountResultModel {
@@ -1416,6 +1470,10 @@ export interface SearchCountResultModel {
   conceptValueTypes?: ConceptTypeSearchCountResultItem[] | null;
   /** @nullable */
   formats?: VocabularyEntryModelSearchCountResultItem[] | null;
+  /** @nullable */
+  keywords?: StringSearchCountResultItem[] | null;
+  /** @nullable */
+  licenses?: VocabularyEntryModelSearchCountResultItem[] | null;
   /** @nullable */
   lifeEvents?: VocabularyEntryModelSearchCountResultItem[] | null;
   /** @nullable */
@@ -1448,6 +1506,8 @@ export interface SearchResultModel {
   id?: string;
   /** @nullable */
   identifier: string | null;
+  /** @nullable */
+  licenses?: VocabularyEntryModel[] | null;
   /** @nullable */
   lifeEvents?: VocabularyEntryModel[] | null;
   publicationLevel?: PublicationLevel;
@@ -1658,6 +1718,10 @@ query?: string;
 filters?: string[];
 addCodeListEntriesPaths?: boolean;
 page?: number;
+/**
+ * @minimum 1
+ * @maximum 2147483647
+ */
 pageSize?: number;
 };
 
@@ -2015,6 +2079,14 @@ conceptValueTypes?: ConceptType[];
  */
 formats?: string[];
 /**
+ * Only results matching one of the specified keywords are returned
+ */
+keywords?: string[];
+/**
+ * Only results with at least one distribution providing one of the specified licenses are returned
+ */
+licenses?: string[];
+/**
  * Only results with one of the specified publication levels (Unit, I14Y Public) are returned
  */
 levels?: PublicationLevel[];
@@ -2051,11 +2123,17 @@ themes?: string[];
  */
 types?: SearchResourceType[];
 /**
+ * The order of the results; relevance when not specified
+ */
+sort?: CatalogSearchSort;
+/**
  * The number of the result page to return
  */
 page?: number;
 /**
  * The size of each result page
+ * @minimum 1
+ * @maximum 2147483647
  */
 pageSize?: number;
 };
@@ -2090,13 +2168,21 @@ conceptValueTypes?: ConceptType[];
  */
 formats?: string[];
 /**
- * Only results with one of the specified publication levels (Unit, I14Y Public) are counted
+ * Only results matching one of the specified keywords are counted
+ */
+keywords?: string[];
+/**
+ * Only results with one of the specified publication levels  are counted
  */
 levels?: PublicationLevel[];
 /**
- * Only results with the proposal publication (I14Y Public) is returned
+ * Only results with the proposal publication is returned
  */
 levelProposals?: PublicationLevel[];
+/**
+ * Only results with at least one distribution providing one of the specified licenses are counted
+ */
+licenses?: string[];
 /**
  * Only results corresponding to one of the specified life events are returned
  */
@@ -14811,7 +14897,7 @@ export const getGetSearchUrl = (params?: GetSearchParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["accessRights","attributedAgents","businessEvents","conceptValueTypes","formats","levels","levelProposals","lifeEvents","publishers","statuses","statusProposals","themes","types"];
+    const explodeParameters = ["accessRights","attributedAgents","businessEvents","conceptValueTypes","formats","keywords","licenses","levels","levelProposals","lifeEvents","publishers","statuses","statusProposals","themes","types"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
       value.forEach((v) => {
@@ -14905,7 +14991,7 @@ export const getGetSearchCountUrl = (params?: GetSearchCountParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["accessRights","attributedAgents","businessEvents","conceptValueTypes","formats","levels","levelProposals","lifeEvents","publishers","statuses","statusProposals","themes","types"];
+    const explodeParameters = ["accessRights","attributedAgents","businessEvents","conceptValueTypes","formats","keywords","levels","levelProposals","licenses","lifeEvents","publishers","statuses","statusProposals","themes","types"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
       value.forEach((v) => {
@@ -15086,6 +15172,159 @@ export const usePostSearchRelationsCount = <TError = ErrorType<ProblemDetails>,
       > => {
       return useMutation(getPostSearchRelationsCountMutationOptions(options), queryClient);
     }
+
+export const getPostSearchReindexUrl = () => {
+
+
+
+
+  return `/api/Search/reindex`
+}
+
+/**
+ * @summary Starts a full reindex in the IndexSearch service and returns at once; follow it with the status route.
+ */
+export const postSearchReindex = async ( options?: Parameters<typeof iopCoreFetch>[1]): Promise<IndexStatusResponse> => {
+
+  return iopCoreFetch<IndexStatusResponse>(getPostSearchReindexUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getPostSearchReindexMutationKey = () => ['postSearchReindex'] as const;
+
+export const getPostSearchReindexMutationOptions = <TError = ErrorType<ProblemDetails | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSearchReindex>>, TError,void, TContext>, request?: SecondParameter<typeof iopCoreFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof postSearchReindex>>, TError,void, TContext> => {
+
+const mutationKey = getPostSearchReindexMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postSearchReindex>>, void> = () => {
+
+
+          return  postSearchReindex(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostSearchReindexMutationResult = NonNullable<Awaited<ReturnType<typeof postSearchReindex>>>
+
+    export type PostSearchReindexMutationError = ErrorType<ProblemDetails | void>
+
+
+    /**
+ * @summary Starts a full reindex in the IndexSearch service and returns at once; follow it with the status route.
+ */
+export const usePostSearchReindex = <TError = ErrorType<ProblemDetails | void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postSearchReindex>>, TError,void, TContext>, request?: SecondParameter<typeof iopCoreFetch>}
+ , queryClient?: QueryClient): UseMutationReturnType<
+        Awaited<ReturnType<typeof postSearchReindex>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getPostSearchReindexMutationOptions(options), queryClient);
+    }
+
+export const getGetSearchReindexStatusUrl = () => {
+
+
+
+
+  return `/api/Search/reindex/status`
+}
+
+/**
+ * @summary Says whether a reindex is running and how the last one ended.
+ */
+export const getSearchReindexStatus = async ( options?: Parameters<typeof iopCoreFetch>[1]): Promise<IndexStatusResponse> => {
+
+  return iopCoreFetch<IndexStatusResponse>(getGetSearchReindexStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetSearchReindexStatusQueryKey = () => {
+    return [
+    'api','Search','reindex','status'
+    ] as const;
+    }
+
+
+export const getGetSearchReindexStatusQueryOptions = <TData = Awaited<ReturnType<typeof getSearchReindexStatus>>, TError = ErrorType<ProblemDetails | void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSearchReindexStatus>>, TError, TData>>, request?: SecondParameter<typeof iopCoreFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  getGetSearchReindexStatusQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSearchReindexStatus>>> = ({ signal }) => getSearchReindexStatus({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSearchReindexStatus>>, TError, TData>
+}
+
+export type GetSearchReindexStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getSearchReindexStatus>>>
+export type GetSearchReindexStatusQueryError = ErrorType<ProblemDetails | void>
+
+
+/**
+ * @summary Says whether a reindex is running and how the last one ended.
+ */
+
+export function useGetSearchReindexStatus<TData = Awaited<ReturnType<typeof getSearchReindexStatus>>, TError = ErrorType<ProblemDetails | void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSearchReindexStatus>>, TError, TData>>, request?: SecondParameter<typeof iopCoreFetch>}
+ , queryClient?: QueryClient
+ ): UseQueryReturnType<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSearchReindexStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryReturnType<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = unref(queryOptions).queryKey as DataTag<QueryKey, TData, TError>;
+
+  return query;
+}
+
+
+
+
+
+
 
 export const getGetUsersCurrentUrl = () => {
 

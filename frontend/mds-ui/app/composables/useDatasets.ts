@@ -8,6 +8,7 @@ import {
   useGetVocabulariesByIdentifier,
   type GetSearchCountParams,
   type GetSearchParams,
+  type CatalogSearchSort,
 } from '~~/api-client/generated/iop-core'
 import type { FacetGroup } from '~/composables/useFacets'
 import { organizationLabel } from '~/model/organizations'
@@ -32,6 +33,7 @@ interface DatasetSearchQueryParams {
   /** Zero-based, like the old portal's search. */
   page: Ref<number>
   limit: Ref<number>
+  sort: Ref<CatalogSearchSort | undefined>
 }
 
 interface UseSearchParams {
@@ -61,9 +63,9 @@ export function useDatasetsSearch() {
       formats: selectedFacets.format?.value,
     }))
 
-    // iop-core gap [G3]: GET /api/Search has no sort parameter; results are sorted by relevance.
     const searchParams = computed<GetSearchParams>(() => ({
       ...countParams.value,
+      sort: queryParams.sort.value,
       page: queryParams.page.value + 1,
       pageSize: queryParams.limit.value,
     }))

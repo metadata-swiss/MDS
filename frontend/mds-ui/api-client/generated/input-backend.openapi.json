@@ -90,6 +90,28 @@
             }
           },
           {
+            "name": "keywords",
+            "in": "query",
+            "description": "Only results matching one of the specified keywords are returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "licenses",
+            "in": "query",
+            "description": "Only results with at least one distribution providing one of the specified licenses are returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "levels",
             "in": "query",
             "description": "Only results with one of the specified publication levels (Unit, I14Y Public) are returned",
@@ -186,6 +208,14 @@
             }
           },
           {
+            "name": "sort",
+            "in": "query",
+            "description": "The order of the results; relevance when not specified",
+            "schema": {
+              "$ref": "#/components/schemas/CatalogSearchSort"
+            }
+          },
+          {
             "name": "page",
             "in": "query",
             "description": "The number of the result page to return",
@@ -200,6 +230,8 @@
             "in": "query",
             "description": "The size of each result page",
             "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
               "type": "integer",
               "format": "int32"
             },
@@ -312,9 +344,20 @@
             }
           },
           {
+            "name": "keywords",
+            "in": "query",
+            "description": "Only results matching one of the specified keywords are counted",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "levels",
             "in": "query",
-            "description": "Only results with one of the specified publication levels (Unit, I14Y Public) are counted",
+            "description": "Only results with one of the specified publication levels  are counted",
             "schema": {
               "type": "array",
               "items": {
@@ -325,11 +368,22 @@
           {
             "name": "levelProposals",
             "in": "query",
-            "description": "Only results with the proposal publication (I14Y Public) is returned",
+            "description": "Only results with the proposal publication is returned",
             "schema": {
               "type": "array",
               "items": {
                 "$ref": "#/components/schemas/PublicationLevel"
+              }
+            }
+          },
+          {
+            "name": "licenses",
+            "in": "query",
+            "description": "Only results with at least one distribution providing one of the specified licenses are counted",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
               }
             }
           },
@@ -678,14 +732,10 @@
             },
             "nullable": true
           },
-          "subAgents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/IdNameModel"
-            },
-            "nullable": true
+          "subOrganizationOf": {
+            "$ref": "#/components/schemas/IdNameModel"
           },
-          "subAgentOf": {
+          "subOrganizations": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IdNameModel"
@@ -711,9 +761,23 @@
           },
           "value": {
             "$ref": "#/components/schemas/AgentModel"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
+      },
+      "CatalogSearchSort": {
+        "enum": [
+          "Relevance",
+          "TitleAscending",
+          "TitleDescending",
+          "ModifiedNewest",
+          "ModifiedOldest"
+        ],
+        "type": "string"
       },
       "ChecksumModel": {
         "type": "object",
@@ -749,6 +813,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/ConceptType"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1261,6 +1329,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/PublicationLevel"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1290,6 +1362,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/RegistrationStatus"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1342,6 +1418,20 @@
             "nullable": true
           },
           "formats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VocabularyEntryModelSearchCountResultItem"
+            },
+            "nullable": true
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StringSearchCountResultItem"
+            },
+            "nullable": true
+          },
+          "licenses": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/VocabularyEntryModelSearchCountResultItem"
@@ -1469,6 +1559,13 @@
             "type": "string",
             "nullable": true
           },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VocabularyEntryModel"
+            },
+            "nullable": true
+          },
           "lifeEvents": {
             "type": "array",
             "items": {
@@ -1546,6 +1643,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/SearchStructureOption"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1561,6 +1662,10 @@
             "format": "int32"
           },
           "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "searchKey": {
             "type": "string",
             "nullable": true
           }
@@ -1636,6 +1741,10 @@
           "uri": {
             "type": "string",
             "nullable": true
+          },
+          "vocabularyIdentifier": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1652,6 +1761,10 @@
           },
           "value": {
             "$ref": "#/components/schemas/VocabularyEntryModel"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

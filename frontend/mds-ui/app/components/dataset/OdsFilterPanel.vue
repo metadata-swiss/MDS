@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useI18n } from '#imports'
+import { useI18n, useRoute, useRouteBaseName, useState } from '#imports'
 
 import type { FacetGroup } from '~/composables/useFacets'
 import OdsMultiSelect from './OdsMultiSelect.vue'
@@ -81,7 +81,10 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const showFilters = ref(false)
+const route = useRoute()
+const getRouteBaseName = useRouteBaseName()
+// One state per search page, whatever the language.
+const showFilters = useState(`filter-panel-open:${String(getRouteBaseName(route) ?? route.path)}`, () => false)
 
 function handleFacetChange(facet: FacetGroup, items: Item[]) {
   const value = items.map(i => i.id)

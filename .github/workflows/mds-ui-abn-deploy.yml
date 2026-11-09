@@ -18,6 +18,11 @@ permissions:
   id-token: write
   contents: read
 
+# Share DEV's lock because both workflows allocate tags in the same Git/ACR namespace.
+concurrency:
+  group: mds-ui-dev
+  cancel-in-progress: false
+
 jobs:
   deploy_abn:
     name: "Deploy to ABN: ${{ inputs.tag }}"

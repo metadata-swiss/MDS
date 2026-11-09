@@ -22,11 +22,6 @@ permissions:
   id-token: write
   contents: read
 
-# One deployment at a time: a second run waits for the running one.
-concurrency:
-  group: mds-ui-abn
-  cancel-in-progress: false
-
 jobs:
   # Release branch only. The ACR credentials are those of the DEV environment, as in the DEV workflow.
   build_release:

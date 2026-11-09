@@ -1,0 +1,80 @@
+name: mds-ui | Deploy to ABN
+
+run-name: "Release ${{ inputs.tag }} | by @${{ github.actor }}"
+
+# Started by hand, as I14Y's i14y-backend-deploy.yml. Deploys an image that the DEV workflow already built and pushed
+# (from main or from a release branch releases/X.Y): no new build, no new tag.
+# Changes only the image of the running deployment. The Kubernetes objects are kept in the infrastructure repository
+# (I14Y-ch/iop-infra-iac, stack/07-aks-platform/workloads/mds-ui/abn) and applied from there by hand.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version to deploy: a version built by the DEV workflow, which is the ACR image tag (e.g. 0.1.5)"
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+# Share DEV's lock because both workflows allocate tags in the same Git/ACR namespace.
+concurrency:
+  group: mds-ui-dev
+  cancel-in-progress: false
+
+jobs:
+  deploy_abn:
+    name: "Deploy to ABN: ${{ inputs.tag }}"
+    runs-on: ubuntu-latest
+    environment: ABN
+
+    steps:
+      - name: Validate tag
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          # The versions of the DEV workflow only: the tag ends up in a shell command run on AKS
+          if [[ ! "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::tag must be a version X.Y.Z, such as 0.1.5."
+            exit 1
+          fi
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_UAMI_CLIENT_ID_ABN }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID_ABN }}
+
+      # The cluster pulls the image from ACR itself. A tag that isn't in ACR fails at "rollout status".
+      - name: Deploy to ABN
+        env:
+          TAG: ${{ inputs.tag }}
+          AZURE_ACR_LOGIN_SERVER: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
+          AKS_RG: ${{ vars.AZURE_AKS_RESOURCE_GROUP }}
+          AKS_CLUSTER: ${{ vars.AZURE_AKS_CLUSTER_NAME }}
+        run: |
+          set -euo pipefail
+          IMAGE="${AZURE_ACR_LOGIN_SERVER}/mds-ui:${TAG}"
+          echo "Rolling deployment/mds-ui in $AKS_CLUSTER ($AKS_RG) to $IMAGE"
+
+          assert_kubectl_succeeded() {
+            local output="$1" step="$2"
+            echo "$output"
+            if ! grep -qE 'with exitcode=[0-9]+' <<<"$output"; then
+              echo "::error::$step returned no status before Azure stopped waiting; the result is unknown."
+              exit 1
+            fi
+            if ! grep -qE 'with exitcode=0( |$)' <<<"$output"; then
+              echo "::error::$step failed inside the cluster. See the output above."
+              exit 1
+            fi
+          }
+
+          patch=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --command \
+            "kubectl -n bfs-np-mds-ui-abn set image deployment/mds-ui mds-ui=${IMAGE}")
+          assert_kubectl_succeeded "$patch" "set image"
+          rollout=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --command \
+            "kubectl -n bfs-np-mds-ui-abn rollout status deployment/mds-ui --timeout=300s")
+          assert_kubectl_succeeded "$rollout" "rollout status"

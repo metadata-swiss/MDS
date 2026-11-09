@@ -71,5 +71,6 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 
 ## Deployment
 
-mds-ui is deployed in Azure Kubernetes Service (AKS), with the manifests in [k8s/](k8s/); there, the environment
-variables come from Azure App Configuration.
+mds-ui is deployed in Azure Kubernetes Service (AKS), with the manifests in the infrastructure repository
+(I14Y-ch/iop-infra-iac, `stack/07-aks-platform/workloads/mds-ui`); there, the environment variables come from Azure
+App Configuration.

@@ -1,8 +1,11 @@
 name: mds-ui | Build & Push Docker Image to ACR | Deploy to DEV
 
+# main: builds, deploys to DEV and tags the commit with its version.
+# A release branch releases/X.Y: builds and tags only, as I14Y's i14y-backend-dev-deploy-automatic.yml; the image is
+# deployed to ABN by hand (mds-ui-abn-deploy.yml).
 on:
   push:
-    branches: [main]
+    branches: [main, "releases/*"]
     paths:
       - 'frontend/mds-ui/**'
       - 'docker/Dockerfile.mds-ui*'
@@ -13,9 +16,13 @@ permissions:
   id-token: write
   contents: write # pushes the version tag
 
-# One deployment at a time: a newer commit waits for the running one.
+# One run at a time per queue: one queue for each release branch, one for everything else (main, which deploys to
+# DEV). GitHub keeps only the newest waiting run of a queue, so a push to main never replaces a waiting release build;
+# a newer commit of the same branch may, and its build contains the replaced commit.
+# The queues can't take the same version: a release branch releases/X.Y owns X.Y.*, and main starts after the newest
+# release branch (Determine version).
 concurrency:
-  group: mds-ui-dev
+  group: ${{ startsWith(github.ref_name, 'releases/') && format('mds-ui-{0}', github.ref_name) || 'mds-ui-dev' }}
   cancel-in-progress: false
 
 jobs:
@@ -29,23 +36,57 @@ jobs:
         with:
           fetch-depth: 0 # the tags, for the version
 
-      # The version is the git tag X.Y.Z: the tag of this commit (re-run), else the latest tag with the patch
-      # incremented, or the version of package.json when it is higher (to start a new minor or major version).
+      # The version is the git tag X.Y.Z.
+      # - releases/X.Y: the tag X.Y.* of this commit, which is then already built (for example the commit the branch
+      #   was created at): nothing to do. Else the latest X.Y.* with the patch incremented, or X.Y.0.
+      # - Other branches: the tag of this commit (re-run), else the highest of: the latest tag with the patch
+      #   incremented; the version of package.json (to start a new minor or major version); and X.(Y+1).0 for the
+      #   newest release branch releases/X.Y, whose versions X.Y.* belong to that branch (as I14Y's prepare-release
+      #   bumps next-version).
       - name: Determine version
+        id: version
         run: |
           set -euo pipefail
-          TAGS='[0-9]*.[0-9]*.[0-9]*'
-          VERSION=$(git tag --points-at HEAD --list "$TAGS" | sort -V | tail -1)
-          if [ -z "$VERSION" ]; then
-            PACKAGE=$(node -p "require('./frontend/mds-ui/package.json').version")
-            LATEST=$(git tag --list "$TAGS" | sort -V | tail -1)
-            NEXT=$([ -n "$LATEST" ] && echo "$LATEST" | awk -F. '{ print $1 "." $2 "." $3 + 1 }' || echo "$PACKAGE")
-            VERSION=$(printf '%s\n%s\n' "$NEXT" "$PACKAGE" | sort -V | tail -1)
+          BUILD=true
+          RELEASE=false
+          if [[ "$GITHUB_REF_NAME" =~ ^releases/([0-9]+)\.([0-9]+)$ ]]; then
+            RELEASE=true
+            TAGS="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.[0-9]*"
+            VERSION=$(git tag --points-at HEAD --list "$TAGS" | sort -V | tail -1)
+            if [ -n "$VERSION" ]; then
+              BUILD=false
+            else
+              LATEST=$(git tag --list "$TAGS" | sort -V | tail -1)
+              VERSION=$([ -n "$LATEST" ] && echo "$LATEST" | awk -F. '{ print $1 "." $2 "." $3 + 1 }' \
+                || echo "${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.0")
+            fi
+          elif [[ "$GITHUB_REF_NAME" == releases/* ]]; then
+            echo "::error::A release branch must be named releases/X.Y, such as releases/0.1."
+            exit 1
+          else
+            TAGS='[0-9]*.[0-9]*.[0-9]*'
+            VERSION=$(git tag --points-at HEAD --list "$TAGS" | sort -V | tail -1)
+            if [ -z "$VERSION" ]; then
+              PACKAGE=$(node -p "require('./frontend/mds-ui/package.json').version")
+              LATEST=$(git tag --list "$TAGS" | sort -V | tail -1)
+              NEXT=$([ -n "$LATEST" ] && echo "$LATEST" | awk -F. '{ print $1 "." $2 "." $3 + 1 }' || echo "$PACKAGE")
+              # Read from the remote, not the checkout, to see a release branch created after this run started.
+              RELEASE_MINOR=$(git ls-remote --heads origin 'releases/*' \
+                | sed -nE 's#^.*refs/heads/releases/([0-9]+\.[0-9]+)$#\1#p' | sort -V | tail -1)
+              AFTER_RELEASE=$([ -n "$RELEASE_MINOR" ] && echo "$RELEASE_MINOR" | awk -F. '{ print $1 "." $2 + 1 ".0" }' || true)
+              VERSION=$(printf '%s\n' "$NEXT" "$PACKAGE" $AFTER_RELEASE | sort -V | tail -1)
+            fi
           fi
-          echo "Version: $VERSION"
+          echo "Version: $VERSION (build: $BUILD, release branch: $RELEASE)"
+          if [ "$BUILD" = false ]; then
+            echo "::notice::$VERSION is already built. Deploy it to ABN with mds-ui-abn-deploy.yml."
+          fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "build=$BUILD" >> $GITHUB_OUTPUT
+          echo "release=$RELEASE" >> $GITHUB_OUTPUT
 
       - name: Azure Login (UAMI via OIDC)
+        if: steps.version.outputs.build == 'true'
         uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_ACR_UAMI_CLIENT_ID }}
@@ -53,14 +94,17 @@ jobs:
           subscription-id: ${{ secrets.AZURE_ACR_SUBSCRIPTION_ID }}
 
       - name: Login to ACR
+        if: steps.version.outputs.build == 'true'
         env:
           AZURE_ACR: ${{ secrets.AZURE_ACR }}
         run: az acr login --name "${AZURE_ACR}"
 
       - name: Set up Docker Buildx
+        if: steps.version.outputs.build == 'true'
         uses: docker/setup-buildx-action@v4
 
       - name: Build & push image
+        if: steps.version.outputs.build == 'true'
         env:
           AZURE_ACR_LOGIN_SERVER: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
         run: |
@@ -73,16 +117,18 @@ jobs:
             --label org.opencontainers.image.revision="${{ github.sha }}" \
             -t "$IMAGE"
 
-      # Applies the manifests of k8s/overlays/dev with the new image tag, so changes to k8s/ are deployed too.
+      # Changes only the image of the running deployment. The Kubernetes objects are kept in the infrastructure
+      # repository (I14Y-ch/iop-infra-iac, stack/07-aks-platform/workloads/mds-ui) and applied from there by hand.
+      # Not for a release branch: DEV runs main.
       - name: Deploy to DEV
-        working-directory: frontend/mds-ui/k8s
+        if: steps.version.outputs.build == 'true' && steps.version.outputs.release == 'false'
         env:
+          AZURE_ACR_LOGIN_SERVER: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
           AKS_RG: ${{ vars.AZURE_AKS_RESOURCE_GROUP }}
           AKS_CLUSTER: ${{ vars.AZURE_AKS_CLUSTER_NAME }}
         run: |
           set -euo pipefail
-          sed -i "s/^    newTag: .*/    newTag: ${VERSION}/" overlays/dev/kustomization.yaml
-          grep -q "newTag: ${VERSION}" overlays/dev/kustomization.yaml
+          IMAGE="${AZURE_ACR_LOGIN_SERVER}/mds-ui:${VERSION}"
 
           assert_kubectl_succeeded() {
             local output="$1" step="$2"
@@ -97,15 +143,16 @@ jobs:
             fi
           }
 
-          apply=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --file . --command \
-            "kubectl apply -k overlays/dev")
-          assert_kubectl_succeeded "$apply" "apply"
+          patch=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --command \
+            "kubectl -n bfs-np-mds-ui-dev set image deployment/mds-ui mds-ui=${IMAGE}")
+          assert_kubectl_succeeded "$patch" "set image"
           rollout=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --command \
             "kubectl -n bfs-np-mds-ui-dev rollout status deployment/mds-ui --timeout=300s")
           assert_kubectl_succeeded "$rollout" "rollout status"
 
-      # Only after a successful deployment, so that a failed run gets the same version again.
+      # Only after a successful build and deployment, so that a failed run gets the same version again.
       - name: Tag commit with version
+        if: steps.version.outputs.build == 'true'
         run: |
           if git tag --points-at HEAD | grep -qx "$VERSION"; then exit 0; fi
           git tag "$VERSION"

@@ -1,4 +1,4 @@
-# mds-ui (Nuxt, server-side rendering), deployed to AKS (frontend/mds-ui/k8s).
+# mds-ui (Nuxt, server-side rendering), deployed to AKS (manifests in I14Y-ch/iop-infra-iac, stack/07-aks-platform/workloads/mds-ui).
 # Build from the repository root:
 #   docker build -f docker/Dockerfile.mds-ui -t i14y-mds-ui .
 ARG NODE_IMAGE=node:24-bookworm-slim

@@ -73,16 +73,16 @@ jobs:
             --label org.opencontainers.image.revision="${{ github.sha }}" \
             -t "$IMAGE"
 
-      # Applies the manifests of k8s/overlays/dev with the new image tag, so changes to k8s/ are deployed too.
+      # Changes only the image of the running deployment. The Kubernetes objects are kept in the infrastructure
+      # repository (I14Y-ch/iop-infra-iac, stack/07-aks-platform/workloads/mds-ui) and applied from there by hand.
       - name: Deploy to DEV
-        working-directory: frontend/mds-ui/k8s
         env:
+          AZURE_ACR_LOGIN_SERVER: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
           AKS_RG: ${{ vars.AZURE_AKS_RESOURCE_GROUP }}
           AKS_CLUSTER: ${{ vars.AZURE_AKS_CLUSTER_NAME }}
         run: |
           set -euo pipefail
-          sed -i "s/^    newTag: .*/    newTag: ${VERSION}/" overlays/dev/kustomization.yaml
-          grep -q "newTag: ${VERSION}" overlays/dev/kustomization.yaml
+          IMAGE="${AZURE_ACR_LOGIN_SERVER}/mds-ui:${VERSION}"
 
           assert_kubectl_succeeded() {
             local output="$1" step="$2"
@@ -97,9 +97,9 @@ jobs:
             fi
           }
 
-          apply=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --file . --command \
-            "kubectl apply -k overlays/dev")
-          assert_kubectl_succeeded "$apply" "apply"
+          patch=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --command \
+            "kubectl -n bfs-np-mds-ui-dev set image deployment/mds-ui mds-ui=${IMAGE}")
+          assert_kubectl_succeeded "$patch" "set image"
           rollout=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --command \
             "kubectl -n bfs-np-mds-ui-dev rollout status deployment/mds-ui --timeout=300s")
           assert_kubectl_succeeded "$rollout" "rollout status"

@@ -16,10 +16,13 @@ permissions:
   id-token: write
   contents: write # pushes the version tag
 
-# One run at a time, main and release branches together: a newer commit waits for the running one, and two runs
-# can't take the same version.
+# One run at a time per queue: one queue for each release branch, one for everything else (main, which deploys to
+# DEV). GitHub keeps only the newest waiting run of a queue, so a push to main never replaces a waiting release build;
+# a newer commit of the same branch may, and its build contains the replaced commit.
+# The queues can't take the same version: a release branch releases/X.Y owns X.Y.*, and main starts after the newest
+# release branch (Determine version).
 concurrency:
-  group: mds-ui-dev
+  group: ${{ startsWith(github.ref_name, 'releases/') && format('mds-ui-{0}', github.ref_name) || 'mds-ui-dev' }}
   cancel-in-progress: false
 
 jobs:
@@ -36,8 +39,10 @@ jobs:
       # The version is the git tag X.Y.Z.
       # - releases/X.Y: the tag X.Y.* of this commit, which is then already built (for example the commit the branch
       #   was created at): nothing to do. Else the latest X.Y.* with the patch incremented, or X.Y.0.
-      # - Other branches: the tag of this commit (re-run), else the latest tag with the patch incremented, or the
-      #   version of package.json when it is higher (to start a new minor or major version).
+      # - Other branches: the tag of this commit (re-run), else the highest of: the latest tag with the patch
+      #   incremented; the version of package.json (to start a new minor or major version); and X.(Y+1).0 for the
+      #   newest release branch releases/X.Y, whose versions X.Y.* belong to that branch (as I14Y's prepare-release
+      #   bumps next-version).
       - name: Determine version
         id: version
         run: |
@@ -65,7 +70,11 @@ jobs:
               PACKAGE=$(node -p "require('./frontend/mds-ui/package.json').version")
               LATEST=$(git tag --list "$TAGS" | sort -V | tail -1)
               NEXT=$([ -n "$LATEST" ] && echo "$LATEST" | awk -F. '{ print $1 "." $2 "." $3 + 1 }' || echo "$PACKAGE")
-              VERSION=$(printf '%s\n%s\n' "$NEXT" "$PACKAGE" | sort -V | tail -1)
+              # Read from the remote, not the checkout, to see a release branch created after this run started.
+              RELEASE_MINOR=$(git ls-remote --heads origin 'releases/*' \
+                | sed -nE 's#^.*refs/heads/releases/([0-9]+\.[0-9]+)$#\1#p' | sort -V | tail -1)
+              AFTER_RELEASE=$([ -n "$RELEASE_MINOR" ] && echo "$RELEASE_MINOR" | awk -F. '{ print $1 "." $2 + 1 ".0" }' || true)
+              VERSION=$(printf '%s\n' "$NEXT" "$PACKAGE" $AFTER_RELEASE | sort -V | tail -1)
             fi
           fi
           echo "Version: $VERSION (build: $BUILD, release branch: $RELEASE)"

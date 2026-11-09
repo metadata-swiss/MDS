@@ -1,8 +1,11 @@
 name: mds-ui | Build & Push Docker Image to ACR | Deploy to DEV
 
+# main: builds, deploys to DEV and tags the commit with its version.
+# A release branch releases/X.Y: builds and tags only, as I14Y's i14y-backend-dev-deploy-automatic.yml; the image is
+# deployed to ABN by hand (mds-ui-abn-deploy.yml).
 on:
   push:
-    branches: [main]
+    branches: [main, "releases/*"]
     paths:
       - 'frontend/mds-ui/**'
       - 'docker/Dockerfile.mds-ui*'
@@ -13,7 +16,8 @@ permissions:
   id-token: write
   contents: write # pushes the version tag
 
-# One deployment at a time: a newer commit waits for the running one.
+# One run at a time, main and release branches together: a newer commit waits for the running one, and two runs
+# can't take the same version.
 concurrency:
   group: mds-ui-dev
   cancel-in-progress: false
@@ -29,23 +33,51 @@ jobs:
         with:
           fetch-depth: 0 # the tags, for the version
 
-      # The version is the git tag X.Y.Z: the tag of this commit (re-run), else the latest tag with the patch
-      # incremented, or the version of package.json when it is higher (to start a new minor or major version).
+      # The version is the git tag X.Y.Z.
+      # - releases/X.Y: the tag X.Y.* of this commit, which is then already built (for example the commit the branch
+      #   was created at): nothing to do. Else the latest X.Y.* with the patch incremented, or X.Y.0.
+      # - Other branches: the tag of this commit (re-run), else the latest tag with the patch incremented, or the
+      #   version of package.json when it is higher (to start a new minor or major version).
       - name: Determine version
+        id: version
         run: |
           set -euo pipefail
-          TAGS='[0-9]*.[0-9]*.[0-9]*'
-          VERSION=$(git tag --points-at HEAD --list "$TAGS" | sort -V | tail -1)
-          if [ -z "$VERSION" ]; then
-            PACKAGE=$(node -p "require('./frontend/mds-ui/package.json').version")
-            LATEST=$(git tag --list "$TAGS" | sort -V | tail -1)
-            NEXT=$([ -n "$LATEST" ] && echo "$LATEST" | awk -F. '{ print $1 "." $2 "." $3 + 1 }' || echo "$PACKAGE")
-            VERSION=$(printf '%s\n%s\n' "$NEXT" "$PACKAGE" | sort -V | tail -1)
+          BUILD=true
+          RELEASE=false
+          if [[ "$GITHUB_REF_NAME" =~ ^releases/([0-9]+)\.([0-9]+)$ ]]; then
+            RELEASE=true
+            TAGS="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.[0-9]*"
+            VERSION=$(git tag --points-at HEAD --list "$TAGS" | sort -V | tail -1)
+            if [ -n "$VERSION" ]; then
+              BUILD=false
+            else
+              LATEST=$(git tag --list "$TAGS" | sort -V | tail -1)
+              VERSION=$([ -n "$LATEST" ] && echo "$LATEST" | awk -F. '{ print $1 "." $2 "." $3 + 1 }' \
+                || echo "${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.0")
+            fi
+          elif [[ "$GITHUB_REF_NAME" == releases/* ]]; then
+            echo "::error::A release branch must be named releases/X.Y, such as releases/0.1."
+            exit 1
+          else
+            TAGS='[0-9]*.[0-9]*.[0-9]*'
+            VERSION=$(git tag --points-at HEAD --list "$TAGS" | sort -V | tail -1)
+            if [ -z "$VERSION" ]; then
+              PACKAGE=$(node -p "require('./frontend/mds-ui/package.json').version")
+              LATEST=$(git tag --list "$TAGS" | sort -V | tail -1)
+              NEXT=$([ -n "$LATEST" ] && echo "$LATEST" | awk -F. '{ print $1 "." $2 "." $3 + 1 }' || echo "$PACKAGE")
+              VERSION=$(printf '%s\n%s\n' "$NEXT" "$PACKAGE" | sort -V | tail -1)
+            fi
           fi
-          echo "Version: $VERSION"
+          echo "Version: $VERSION (build: $BUILD, release branch: $RELEASE)"
+          if [ "$BUILD" = false ]; then
+            echo "::notice::$VERSION is already built. Deploy it to ABN with mds-ui-abn-deploy.yml."
+          fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "build=$BUILD" >> $GITHUB_OUTPUT
+          echo "release=$RELEASE" >> $GITHUB_OUTPUT
 
       - name: Azure Login (UAMI via OIDC)
+        if: steps.version.outputs.build == 'true'
         uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_ACR_UAMI_CLIENT_ID }}
@@ -53,14 +85,17 @@ jobs:
           subscription-id: ${{ secrets.AZURE_ACR_SUBSCRIPTION_ID }}
 
       - name: Login to ACR
+        if: steps.version.outputs.build == 'true'
         env:
           AZURE_ACR: ${{ secrets.AZURE_ACR }}
         run: az acr login --name "${AZURE_ACR}"
 
       - name: Set up Docker Buildx
+        if: steps.version.outputs.build == 'true'
         uses: docker/setup-buildx-action@v4
 
       - name: Build & push image
+        if: steps.version.outputs.build == 'true'
         env:
           AZURE_ACR_LOGIN_SERVER: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
         run: |
@@ -75,7 +110,9 @@ jobs:
 
       # Changes only the image of the running deployment. The Kubernetes objects are kept in the infrastructure
       # repository (I14Y-ch/iop-infra-iac, stack/07-aks-platform/workloads/mds-ui) and applied from there by hand.
+      # Not for a release branch: DEV runs main.
       - name: Deploy to DEV
+        if: steps.version.outputs.build == 'true' && steps.version.outputs.release == 'false'
         env:
           AZURE_ACR_LOGIN_SERVER: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
           AKS_RG: ${{ vars.AZURE_AKS_RESOURCE_GROUP }}
@@ -104,8 +141,9 @@ jobs:
             "kubectl -n bfs-np-mds-ui-dev rollout status deployment/mds-ui --timeout=300s")
           assert_kubectl_succeeded "$rollout" "rollout status"
 
-      # Only after a successful deployment, so that a failed run gets the same version again.
+      # Only after a successful build and deployment, so that a failed run gets the same version again.
       - name: Tag commit with version
+        if: steps.version.outputs.build == 'true'
         run: |
           if git tag --points-at HEAD | grep -qx "$VERSION"; then exit 0; fi
           git tag "$VERSION"

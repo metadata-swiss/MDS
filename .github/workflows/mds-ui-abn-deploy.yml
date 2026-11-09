@@ -1,16 +1,12 @@
 name: mds-ui | Deploy to ABN
 
-run-name: "Release ${{ inputs.tag || github.ref_name }} | by @${{ github.actor }}"
+run-name: "Release ${{ inputs.tag }} | by @${{ github.actor }}"
 
-# Two ways to deploy, as in I14Y (i14y-frontend-release-deploy.yml, i14y-prepare-release.yml):
-#   - a push to a release branch releases/X.Y, including its creation: deploys the branch's version, and builds it
-#     first when the commit has no version yet (a fix on the release branch);
-#   - started by hand with a version that is already in ACR: no build.
+# Started by hand, as I14Y's i14y-backend-deploy.yml. Deploys an image that the DEV workflow already built and pushed
+# (from main or from a release branch releases/X.Y): no new build, no new tag.
 # Changes only the image of the running deployment. The Kubernetes objects are kept in the infrastructure repository
 # (I14Y-ch/iop-infra-iac, stack/07-aks-platform/workloads/mds-ui/abn) and applied from there by hand.
 on:
-  push:
-    branches: ["releases/*"]
   workflow_dispatch:
     inputs:
       tag:
@@ -23,95 +19,15 @@ permissions:
   contents: read
 
 jobs:
-  # Release branch only. The ACR credentials are those of the DEV environment, as in the DEV workflow.
-  build_release:
-    name: "Build release: ${{ github.ref_name }}"
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    environment: DEV
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      build: ${{ steps.version.outputs.build }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0 # the tags, for the version
-
-      # releases/X.Y takes the versions X.Y.Z: the tag X.Y.* of this commit when it has one (the branch was created
-      # at a version DEV built, whose image is in ACR), else the latest X.Y.* with the patch incremented, or X.Y.0.
-      - name: Determine version
-        id: version
-        env:
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          if [[ ! "$BRANCH" =~ ^releases/([0-9]+)\.([0-9]+)$ ]]; then
-            echo "::error::A release branch must be named releases/X.Y, such as releases/0.1."
-            exit 1
-          fi
-          MINOR="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
-          VERSION=$(git tag --points-at HEAD --list "$MINOR.*" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
-          if [ -n "$VERSION" ]; then
-            BUILD=false
-          else
-            LATEST=$(git tag --list "$MINOR.*" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
-            VERSION=$([ -n "$LATEST" ] && echo "$LATEST" | awk -F. '{ print $1 "." $2 "." $3 + 1 }' || echo "$MINOR.0")
-            BUILD=true
-          fi
-          echo "Version: $VERSION (build: $BUILD)"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "build=$BUILD" >> "$GITHUB_OUTPUT"
-
-      - name: Azure Login (UAMI via OIDC)
-        if: steps.version.outputs.build == 'true'
-        uses: azure/login@v3
-        with:
-          client-id: ${{ secrets.AZURE_ACR_UAMI_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_ACR_SUBSCRIPTION_ID }}
-
-      - name: Login to ACR
-        if: steps.version.outputs.build == 'true'
-        env:
-          AZURE_ACR: ${{ secrets.AZURE_ACR }}
-        run: az acr login --name "${AZURE_ACR}"
-
-      - name: Set up Docker Buildx
-        if: steps.version.outputs.build == 'true'
-        uses: docker/setup-buildx-action@v4
-
-      - name: Build & push image
-        if: steps.version.outputs.build == 'true'
-        env:
-          AZURE_ACR_LOGIN_SERVER: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          IMAGE="${AZURE_ACR_LOGIN_SERVER}/mds-ui:${VERSION}"
-          echo "Building and pushing ${IMAGE}"
-          docker buildx build . \
-            --file docker/Dockerfile.mds-ui \
-            --push \
-            --label org.opencontainers.image.version="$VERSION" \
-            --label org.opencontainers.image.revision="${{ github.sha }}" \
-            -t "$IMAGE"
-
   deploy_abn:
-    name: "Deploy to ABN: ${{ inputs.tag || needs.build_release.outputs.version }}"
-    needs: build_release
-    # Runs after the build on a release branch, or alone when started by hand (the build is skipped).
-    if: ${{ !cancelled() && (needs.build_release.result == 'success' || needs.build_release.result == 'skipped') }}
+    name: "Deploy to ABN: ${{ inputs.tag }}"
     runs-on: ubuntu-latest
     environment: ABN
-    permissions:
-      id-token: write
-      contents: write # tags the release branch's commit with its new version
-    env:
-      TAG: ${{ inputs.tag || needs.build_release.outputs.version }}
 
     steps:
       - name: Validate tag
+        env:
+          TAG: ${{ inputs.tag }}
         run: |
           # The versions of the DEV workflow only: the tag ends up in a shell command run on AKS
           if [[ ! "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -129,6 +45,7 @@ jobs:
       # The cluster pulls the image from ACR itself. A tag that isn't in ACR fails at "rollout status".
       - name: Deploy to ABN
         env:
+          TAG: ${{ inputs.tag }}
           AZURE_ACR_LOGIN_SERVER: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
           AKS_RG: ${{ vars.AZURE_AKS_RESOURCE_GROUP }}
           AKS_CLUSTER: ${{ vars.AZURE_AKS_CLUSTER_NAME }}
@@ -156,10 +73,3 @@ jobs:
           rollout=$(az aks command invoke -g "$AKS_RG" -n "$AKS_CLUSTER" --command \
             "kubectl -n bfs-np-mds-ui-abn rollout status deployment/mds-ui --timeout=300s")
           assert_kubectl_succeeded "$rollout" "rollout status"
-
-      # Only after a successful deployment, so that a failed run gets the same version again (as in the DEV workflow).
-      - name: Tag commit with version
-        if: needs.build_release.outputs.build == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh api "repos/${{ github.repository }}/git/refs" -f ref="refs/tags/${TAG}" -f sha="${{ github.sha }}"

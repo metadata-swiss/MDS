@@ -35,6 +35,7 @@
       "contents": "Contenuti"
     },
     "dataset_search": {
+      "catalogues": "Cataloghi",
       "search_placeholder": "Cerca set di dati",
       "search_button": "Cerca",
       "search_results": "Risultati della ricerca",

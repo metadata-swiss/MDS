@@ -13,9 +13,12 @@ import {
 import type { FacetGroup } from '~/composables/useFacets'
 import { organizationLabel } from '~/model/organizations'
 import { localize } from '~/utils/getCurrentTranslation'
+import type { AppLanguage } from '~/constants/langages'
 
-export const datasetFacets = ['categories', 'organization', 'format', 'license', 'keywords'] as const
+export const datasetFacets = ['catalogues', 'categories', 'organization', 'format', 'license', 'keywords'] as const
 const KEYWORD_MIN_COUNT = 1
+
+const CATALOGUE_TITLE_FALLBACK: readonly AppLanguage[] = ['de', 'en', 'fr', 'it']
 
 // All public datasets of iop-core are shown, not only those of the opendata.swiss catalog.
 const OPEN_DATASETS = {
@@ -57,6 +60,7 @@ export function useDatasetsSearch() {
       ...OPEN_DATASETS,
       language: locale.value,
       query: queryParams.q.value || undefined,
+      catalogs: selectedFacets.catalogues?.value,
       // The categories are the I14Y themes, not the EU data themes of the catalog records.
       themes: selectedFacets.categories?.value,
       publishers: selectedFacets.organization?.value,
@@ -92,6 +96,11 @@ export function useDatasetsSearch() {
         const selectedKeywords = selectedFacets.keywords?.value ?? []
 
         return [
+          {
+            id: 'catalogues',
+            title: t('message.dataset_search.catalogues'),
+            items: (counts?.catalogs ?? []).map(item => ({ id: item.value.id ?? '', title: localize(item.value.title, language, CATALOGUE_TITLE_FALLBACK), count: item.count ?? 0 })),
+          },
           {
             id: 'categories',
             title: t('message.dataset_detail.categories'),

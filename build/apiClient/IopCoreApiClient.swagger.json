@@ -1234,6 +1234,14 @@
             }
           },
           {
+            "name": "tenantIdentifier",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "version",
             "in": "query",
             "description": "",
@@ -5835,6 +5843,14 @@
             }
           },
           {
+            "name": "tenantIdentifier",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "publicationLevel",
             "in": "query",
             "description": "",
@@ -8111,6 +8127,14 @@
           },
           {
             "name": "publisherIdentifier",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantIdentifier",
             "in": "query",
             "description": "",
             "schema": {
@@ -11041,8 +11065,24 @@
         "tags": [
           "DcatCatalogs"
         ],
-        "summary": "Gets all the DCAT catalogs.",
+        "summary": "Gets the DCAT catalogs matching the given filters.",
         "parameters": [
+          {
+            "name": "publisherIdentifier",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantIdentifier",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "page",
             "in": "query",
@@ -12659,6 +12699,14 @@
           },
           {
             "name": "publisherIdentifier",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantIdentifier",
             "in": "query",
             "description": "",
             "schema": {
@@ -16070,6 +16118,14 @@
             }
           },
           {
+            "name": "tenantIdentifier",
+            "in": "query",
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "publicationLevel",
             "in": "query",
             "description": "",
@@ -17550,6 +17606,18 @@
             }
           },
           {
+            "name": "catalogs",
+            "in": "query",
+            "description": "Only datasets recorded in one of the specified DCAT catalogues (by id) are returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          },
+          {
             "name": "conceptValueTypes",
             "in": "query",
             "description": "Only results corresponding to one of the specified IOP concept value types (CodeList, Date, Numeric, String) are returned.",
@@ -17800,6 +17868,18 @@
               "type": "array",
               "items": {
                 "type": "string"
+              }
+            }
+          },
+          {
+            "name": "catalogs",
+            "in": "query",
+            "description": "Only datasets recorded in one of the specified DCAT catalogues (by id) are counted",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
               }
             }
           },
@@ -18732,7 +18812,7 @@
           "subOrganizationOf": {
             "$ref": "#/components/schemas/IdNameModel"
           },
-          "subOrganizations": {
+          "hasSubOrganizations": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IdNameModel"
@@ -19468,7 +19548,9 @@
       },
       "DataServiceModel": {
         "required": [
-          "system"
+          "publisher",
+          "system",
+          "tenant"
         ],
         "type": "object",
         "properties": {
@@ -19561,7 +19643,7 @@
             "$ref": "#/components/schemas/PublicationLevel"
           },
           "publisher": {
-            "$ref": "#/components/schemas/AgentModel"
+            "$ref": "#/components/schemas/IdentifierNameModel"
           },
           "registrationStatus": {
             "$ref": "#/components/schemas/RegistrationStatus"
@@ -19584,6 +19666,9 @@
           },
           "system": {
             "$ref": "#/components/schemas/SystemInfoModel"
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/AgentModel"
           },
           "themes": {
             "type": "array",
@@ -19776,6 +19861,7 @@
           "description",
           "publisher",
           "system",
+          "tenant",
           "title"
         ],
         "type": "object",
@@ -19788,10 +19874,13 @@
             "format": "uuid"
           },
           "publisher": {
-            "$ref": "#/components/schemas/AgentModel"
+            "$ref": "#/components/schemas/IdentifierNameModel"
           },
           "system": {
             "$ref": "#/components/schemas/SystemInfoModel"
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/AgentModel"
           },
           "themeTaxonomy": {
             "type": "array",
@@ -19806,6 +19895,26 @@
         },
         "additionalProperties": false
       },
+      "DcatCatalogModelSearchCountResultItem": {
+        "required": [
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "value": {
+            "$ref": "#/components/schemas/DcatCatalogModel"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DcatCatalogRecordInputModel": {
         "required": [
           "primaryTopic"
@@ -19816,6 +19925,9 @@
             "$ref": "#/components/schemas/DcatCatalogResourceModel"
           },
           "themes": {
+            "enum": [
+              null
+            ],
             "nullable": true
           }
         },
@@ -20089,7 +20201,9 @@
       },
       "DcatDatasetModel": {
         "required": [
-          "system"
+          "publisher",
+          "system",
+          "tenant"
         ],
         "type": "object",
         "properties": {
@@ -20214,7 +20328,7 @@
             "$ref": "#/components/schemas/PublicationLevel"
           },
           "publisher": {
-            "$ref": "#/components/schemas/AgentModel"
+            "$ref": "#/components/schemas/IdentifierNameModel"
           },
           "qualifiedAttributions": {
             "type": "array",
@@ -20276,6 +20390,9 @@
               "$ref": "#/components/schemas/PeriodOfTimeModel"
             },
             "nullable": true
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/AgentModel"
           },
           "themes": {
             "type": "array",
@@ -20738,9 +20855,6 @@
         "additionalProperties": false
       },
       "IdentifierNameModel": {
-        "required": [
-          "identifier"
-        ],
         "type": "object",
         "properties": {
           "identifier": {
@@ -20938,6 +21052,7 @@
           "publisher",
           "responsiblePerson",
           "system",
+          "tenant",
           "version"
         ],
         "type": "object",
@@ -21044,7 +21159,7 @@
             "$ref": "#/components/schemas/PublicationLevel"
           },
           "publisher": {
-            "$ref": "#/components/schemas/AgentModel"
+            "$ref": "#/components/schemas/IdentifierNameModel"
           },
           "registrationStatus": {
             "$ref": "#/components/schemas/RegistrationStatus"
@@ -21060,6 +21175,9 @@
           },
           "system": {
             "$ref": "#/components/schemas/SystemInfoModel"
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/AgentModel"
           },
           "themes": {
             "type": "array",
@@ -21304,6 +21422,7 @@
           "source",
           "system",
           "target",
+          "tenant",
           "version"
         ],
         "type": "object",
@@ -21346,7 +21465,7 @@
             "$ref": "#/components/schemas/PublicationLevel"
           },
           "publisher": {
-            "$ref": "#/components/schemas/AgentModel"
+            "$ref": "#/components/schemas/IdentifierNameModel"
           },
           "registrationStatus": {
             "$ref": "#/components/schemas/RegistrationStatus"
@@ -21368,6 +21487,9 @@
           },
           "target": {
             "$ref": "#/components/schemas/MappingTableUriModel"
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/AgentModel"
           },
           "themes": {
             "type": "array",
@@ -21639,7 +21761,8 @@
           "description",
           "name",
           "publisher",
-          "system"
+          "system",
+          "tenant"
         ],
         "type": "object",
         "properties": {
@@ -21709,7 +21832,7 @@
             "$ref": "#/components/schemas/PublicationLevel"
           },
           "publisher": {
-            "$ref": "#/components/schemas/AgentModel"
+            "$ref": "#/components/schemas/IdentifierNameModel"
           },
           "registrationStatus": {
             "$ref": "#/components/schemas/RegistrationStatus"
@@ -21753,6 +21876,9 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/AgentModel"
           },
           "thematicAreas": {
             "type": "array",
@@ -22092,8 +22218,11 @@
             "nullable": true
           },
           "conformsTo": {
-            "type": "string",
-            "format": "uri",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
             "nullable": true
           },
           "description": {
@@ -22177,6 +22306,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/VocabularyEntryModelSearchCountResultItem"
+            },
+            "nullable": true
+          },
+          "catalogs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcatCatalogModelSearchCountResultItem"
             },
             "nullable": true
           },

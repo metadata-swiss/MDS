@@ -68,6 +68,18 @@
             }
           },
           {
+            "name": "catalogs",
+            "in": "query",
+            "description": "Only datasets recorded in one of the specified DCAT catalogues (by id) are returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          },
+          {
             "name": "conceptValueTypes",
             "in": "query",
             "description": "Only results corresponding to one of the specified IOP concept value types (CodeList, Date, Numeric, String) are returned.",
@@ -318,6 +330,18 @@
               "type": "array",
               "items": {
                 "type": "string"
+              }
+            }
+          },
+          {
+            "name": "catalogs",
+            "in": "query",
+            "description": "Only datasets recorded in one of the specified DCAT catalogues (by id) are counted",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid"
               }
             }
           },
@@ -735,7 +759,7 @@
           "subOrganizationOf": {
             "$ref": "#/components/schemas/IdNameModel"
           },
-          "subOrganizations": {
+          "hasSubOrganizations": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IdNameModel"
@@ -828,9 +852,70 @@
         ],
         "type": "string"
       },
+      "DcatCatalogModel": {
+        "required": [
+          "description",
+          "publisher",
+          "system",
+          "tenant",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "description": {
+            "$ref": "#/components/schemas/MultiLanguageModel"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "publisher": {
+            "$ref": "#/components/schemas/IdentifierNameModel"
+          },
+          "system": {
+            "$ref": "#/components/schemas/SystemInfoModel"
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/AgentModel"
+          },
+          "themeTaxonomy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "title": {
+            "$ref": "#/components/schemas/MultiLanguageModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DcatCatalogModelSearchCountResultItem": {
+        "required": [
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "value": {
+            "$ref": "#/components/schemas/DcatCatalogModel"
+          },
+          "searchKey": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "DcatDatasetModel": {
         "required": [
-          "system"
+          "publisher",
+          "system",
+          "tenant"
         ],
         "type": "object",
         "properties": {
@@ -955,7 +1040,7 @@
             "$ref": "#/components/schemas/PublicationLevel"
           },
           "publisher": {
-            "$ref": "#/components/schemas/AgentModel"
+            "$ref": "#/components/schemas/IdentifierNameModel"
           },
           "qualifiedAttributions": {
             "type": "array",
@@ -1017,6 +1102,9 @@
               "$ref": "#/components/schemas/PeriodOfTimeModel"
             },
             "nullable": true
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/AgentModel"
           },
           "themes": {
             "type": "array",
@@ -1198,6 +1286,19 @@
           "id": {
             "type": "string",
             "format": "uuid"
+          },
+          "name": {
+            "$ref": "#/components/schemas/MultiLanguageModel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IdentifierNameModel": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "nullable": true
           },
           "name": {
             "$ref": "#/components/schemas/MultiLanguageModel"
@@ -1407,6 +1508,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/VocabularyEntryModelSearchCountResultItem"
+            },
+            "nullable": true
+          },
+          "catalogs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcatCatalogModelSearchCountResultItem"
             },
             "nullable": true
           },

@@ -35,6 +35,7 @@
       "contents": "Table des matières"
     },
     "dataset_search": {
+      "catalogues": "Catalogues",
       "search_placeholder": "Rechercher des jeux de données",
       "search_button": "Rechercher",
       "search_results": "Résultats de recherche",

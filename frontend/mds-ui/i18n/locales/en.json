@@ -34,6 +34,7 @@
       "contents": "Table of contents"
     },
     "dataset_search": {
+      "catalogues": "Catalogues",
       "search_placeholder": "Search datasets",
       "search_button": "Search",
       "search_results": "Search results",

@@ -51,6 +51,7 @@ export class DcatApChV2DatasetAdapter {
       title: result.title,
       description: result.description,
       publisher: result.publisher,
+      tenant: result.publisher,
       themes: result.themes,
       accessRights: result.accessRights,
       system: result.system ?? {},
@@ -144,10 +145,12 @@ export class DcatApChV2DatasetAdapter {
    */
   get publisher() {
     const publisher = this.#dataset.publisher
+    const tenant = this.#dataset.tenant
+    const publisherIsTenant = !!publisher?.identifier && publisher.identifier.toLowerCase() === tenant?.identifier?.toLowerCase()
     return {
       id: publisher?.identifier ?? undefined,
       name: publisher?.name ?? {},
-      homepage: publisher?.homePage ?? undefined,
+      homepage: publisherIsTenant ? tenant?.homePage ?? undefined : undefined,
     }
   }
 

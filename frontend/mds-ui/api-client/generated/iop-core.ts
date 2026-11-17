@@ -1485,7 +1485,7 @@ export interface SearchCountResultModel {
   /** @nullable */
   businessEvents?: VocabularyEntryModelSearchCountResultItem[] | null;
   /** @nullable */
-  catalogs?: DcatCatalogModelSearchCountResultItem[] | null;
+  dcatCatalogs?: DcatCatalogModelSearchCountResultItem[] | null;
   /** @nullable */
   conceptValueTypes?: ConceptTypeSearchCountResultItem[] | null;
   /** @nullable */
@@ -2097,7 +2097,7 @@ businessEvents?: string[];
 /**
  * Only datasets recorded in one of the specified DCAT catalogues (by id) are returned
  */
-catalogs?: string[];
+dcatCatalogs?: string[];
 /**
  * Only results corresponding to one of the specified IOP concept value types (CodeList, Date, Numeric, String) are returned.
  */
@@ -2190,7 +2190,7 @@ businessEvents?: string[];
 /**
  * Only datasets recorded in one of the specified DCAT catalogues (by id) are counted
  */
-catalogs?: string[];
+dcatCatalogs?: string[];
 /**
  * Only results corresponding to one of the specified IOP concept value types (CodeList, Date, Numeric, String) are counted.
  */
@@ -15008,7 +15008,7 @@ export const getGetSearchUrl = (params?: GetSearchParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["accessRights","attributedAgents","businessEvents","catalogs","conceptValueTypes","formats","keywords","licenses","levels","levelProposals","lifeEvents","publishers","statuses","statusProposals","themes","types"];
+    const explodeParameters = ["accessRights","attributedAgents","businessEvents","dcatCatalogs","conceptValueTypes","formats","keywords","licenses","levels","levelProposals","lifeEvents","publishers","statuses","statusProposals","themes","types"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
       value.forEach((v) => {
@@ -15102,7 +15102,7 @@ export const getGetSearchCountUrl = (params?: GetSearchCountParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["accessRights","attributedAgents","businessEvents","catalogs","conceptValueTypes","formats","keywords","levels","levelProposals","licenses","lifeEvents","publishers","statuses","statusProposals","themes","types"];
+    const explodeParameters = ["accessRights","attributedAgents","businessEvents","dcatCatalogs","conceptValueTypes","formats","keywords","levels","levelProposals","licenses","lifeEvents","publishers","statuses","statusProposals","themes","types"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
       value.forEach((v) => {

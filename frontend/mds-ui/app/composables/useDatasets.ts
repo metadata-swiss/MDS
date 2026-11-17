@@ -60,7 +60,7 @@ export function useDatasetsSearch() {
       ...OPEN_DATASETS,
       language: locale.value,
       query: queryParams.q.value || undefined,
-      catalogs: selectedFacets.catalogues?.value,
+      dcatCatalogs: selectedFacets.catalogues?.value,
       // The categories are the I14Y themes, not the EU data themes of the catalog records.
       themes: selectedFacets.categories?.value,
       publishers: selectedFacets.organization?.value,
@@ -99,7 +99,7 @@ export function useDatasetsSearch() {
           {
             id: 'catalogues',
             title: t('message.dataset_search.catalogues'),
-            items: (counts?.catalogs ?? []).map(item => ({ id: item.value.id ?? '', title: localize(item.value.title, language, CATALOGUE_TITLE_FALLBACK), count: item.count ?? 0 })),
+            items: (counts?.dcatCatalogs ?? []).map(item => ({ id: item.value.id ?? '', title: localize(item.value.title, language, CATALOGUE_TITLE_FALLBACK), count: item.count ?? 0 })),
           },
           {
             id: 'categories',

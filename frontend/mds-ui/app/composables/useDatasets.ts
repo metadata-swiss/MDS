@@ -9,23 +9,13 @@ import {
   type GetSearchCountParams,
   type GetSearchParams,
   type CatalogSearchSort,
-  type MultiLanguageModel,
 } from '~~/api-client/generated/iop-core'
 import type { FacetGroup } from '~/composables/useFacets'
 import { organizationLabel } from '~/model/organizations'
 import { localize } from '~/utils/getCurrentTranslation'
-import type { AppLanguage } from '~/constants/langages'
 
 export const datasetFacets = ['catalogues', 'categories', 'organization', 'format', 'license', 'keywords'] as const
 const KEYWORD_MIN_COUNT = 1
-
-const CATALOGUE_TITLE_FALLBACK: readonly AppLanguage[] = ['de', 'en', 'fr', 'it']
-
-function catalogueTitle(title: MultiLanguageModel | undefined, language: string): string {
-  return [language, ...CATALOGUE_TITLE_FALLBACK]
-    .map(lang => title?.[lang as AppLanguage])
-    .find(Boolean) ?? localize(title, language)
-}
 
 // All public datasets of iop-core are shown, not only those of the opendata.swiss catalog.
 const OPEN_DATASETS = {
@@ -106,7 +96,7 @@ export function useDatasetsSearch() {
           {
             id: 'catalogues',
             title: t('message.dataset_search.catalogues'),
-            items: (counts?.dcatCatalogs ?? []).map(item => ({ id: item.value.id ?? '', title: catalogueTitle(item.value.title, language), count: item.count ?? 0 })),
+            items: (counts?.dcatCatalogs ?? []).map(item => ({ id: item.value.id ?? '', title: localize(item.value.title, language), count: item.count ?? 0 })),
           },
           {
             id: 'categories',

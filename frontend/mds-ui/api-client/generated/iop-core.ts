@@ -149,7 +149,7 @@ export interface AgentModel {
   spatialCH?: VocabularyEntryModel[] | null;
   subOrganizationOf?: IdNameModel;
   /** @nullable */
-  subOrganizations?: IdNameModel[] | null;
+  hasSubOrganizations?: IdNameModel[] | null;
   /** @nullable */
   uid?: string | null;
 }
@@ -458,6 +458,12 @@ export interface KeywordModel {
   uri?: string | null;
 }
 
+export interface IdentifierNameInputModel {
+  /** @nullable */
+  identifier?: string | null;
+  name?: MultiLanguageModel;
+}
+
 export interface EmailInputModel {
   /** @nullable */
   email: string | null;
@@ -497,11 +503,12 @@ export interface DataServiceInputModel {
   /** @nullable */
   modified?: string | null;
   previousVersion?: IdModel;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
   responsibleDeputy?: EmailInputModel;
   responsiblePerson?: EmailInputModel;
   /** @nullable */
   servesDatasets?: IdModel[] | null;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themes?: ThemeInputModel[] | null;
   title: MultiLanguageModel;
@@ -517,6 +524,12 @@ export const PublicationLevel = {
   Internal: 'Internal',
   Public: 'Public',
 } as const;
+
+export interface IdentifierNameModel {
+  /** @nullable */
+  identifier?: string | null;
+  name?: MultiLanguageModel;
+}
 
 export type RegistrationStatus = typeof RegistrationStatus[keyof typeof RegistrationStatus];
 
@@ -569,7 +582,7 @@ export interface DataServiceModel {
   previousVersion?: IdModel;
   publicationLevel?: PublicationLevel;
   publicationLevelProposal?: PublicationLevel;
-  publisher?: AgentModel;
+  publisher: IdentifierNameModel;
   registrationStatus?: RegistrationStatus;
   registrationStatusProposal?: RegistrationStatus;
   responsibleDeputy?: IopPersonModel;
@@ -577,6 +590,7 @@ export interface DataServiceModel {
   /** @nullable */
   servesDatasets?: IdModel[] | null;
   system: SystemInfoModel;
+  tenant: AgentModel;
   /** @nullable */
   themes?: VocabularyEntryModel[] | null;
   title?: MultiLanguageModel;
@@ -636,20 +650,29 @@ export interface DatasetReferenceModel {
 
 export interface DcatCatalogInputModel {
   description: MultiLanguageModel;
-  title: MultiLanguageModel;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themeTaxonomy?: string[] | null;
+  title: MultiLanguageModel;
 }
 
 export interface DcatCatalogModel {
   description: MultiLanguageModel;
   id?: string;
-  publisher: AgentModel;
+  publisher: IdentifierNameModel;
   system: SystemInfoModel;
+  tenant: AgentModel;
   /** @nullable */
   themeTaxonomy?: string[] | null;
   title: MultiLanguageModel;
+}
+
+export interface DcatCatalogModelSearchCountResultItem {
+  count?: number;
+  value: DcatCatalogModel;
+  /** @nullable */
+  searchKey?: string | null;
 }
 
 export type DcatCatalogType = typeof DcatCatalogType[keyof typeof DcatCatalogType];
@@ -667,7 +690,7 @@ export interface DcatCatalogResourceModel {
 
 export interface DcatCatalogRecordInputModel {
   primaryTopic: DcatCatalogResourceModel;
-  themes?: unknown;
+  themes?: null;
 }
 
 export interface DcatCatalogThemeModel {
@@ -782,7 +805,7 @@ export interface DcatDatasetInputModel {
   previousVersion?: IdModel;
   /** @nullable */
   processId?: string | null;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
   /** @nullable */
   qualifiedAttributions?: DcatQualifiedAttributionInputModel[] | null;
   qualifiedAttributionComplement?: MultiLanguageModel;
@@ -799,6 +822,7 @@ export interface DcatDatasetInputModel {
   spatial?: string[] | null;
   /** @nullable */
   temporalCoverage?: PeriodOfTimeModel[] | null;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themes?: ThemeInputModel[] | null;
   title: MultiLanguageModel;
@@ -896,7 +920,7 @@ export interface DcatDatasetModel {
   processId?: string | null;
   publicationLevel?: PublicationLevel;
   publicationLevelProposal?: PublicationLevel;
-  publisher?: AgentModel;
+  publisher: IdentifierNameModel;
   /** @nullable */
   qualifiedAttributions?: DcatQualifiedAttributionModel[] | null;
   qualifiedAttributionComplement?: MultiLanguageModel;
@@ -916,6 +940,7 @@ export interface DcatDatasetModel {
   spatial?: string[] | null;
   /** @nullable */
   temporalCoverage?: PeriodOfTimeModel[] | null;
+  tenant: AgentModel;
   /** @nullable */
   themes?: VocabularyEntryModel[] | null;
   title?: MultiLanguageModel;
@@ -964,12 +989,6 @@ export interface FilterDefinitionModel {
 export interface FilterConfigurationModel {
   /** @nullable */
   filters: FilterDefinitionModel[] | null;
-}
-
-export interface IdentifierNameModel {
-  /** @nullable */
-  identifier: string | null;
-  name?: MultiLanguageModel;
 }
 
 export interface IdentifierVersionExistsModel {
@@ -1032,11 +1051,12 @@ export interface IopConceptInputModel {
   numberDecimals?: number | null;
   /** @nullable */
   pattern?: string | null;
+  publisher: IdentifierNameInputModel;
   /** @nullable */
   replaces?: IdModel[] | null;
-  publisher: IdentifierInputModel;
   responsibleDeputy?: EmailInputModel;
   responsiblePerson: EmailInputModel;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themes?: ThemeInputModel[] | null;
   /** @nullable */
@@ -1083,12 +1103,13 @@ export interface IopConceptModel {
   isReplacedBy?: ConceptReferenceModel[] | null;
   publicationLevel?: PublicationLevel;
   publicationLevelProposal?: PublicationLevel;
-  publisher: AgentModel;
+  publisher: IdentifierNameModel;
   registrationStatus?: RegistrationStatus;
   registrationStatusProposal?: RegistrationStatus;
   responsibleDeputy?: IopPersonModel;
   responsiblePerson: IopPersonModel;
   system: SystemInfoModel;
+  tenant: AgentModel;
   /** @nullable */
   themes?: VocabularyEntryModel[] | null;
   /** @nullable */
@@ -1159,11 +1180,12 @@ export interface MappingTableInputModel {
   /** @nullable */
   keywords?: KeywordModel[] | null;
   name: MultiLanguageModel;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
   responsibleDeputy?: EmailInputModel;
   responsiblePerson: EmailInputModel;
   source: UriInputModel;
   target: UriInputModel;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themes?: ThemeInputModel[] | null;
   /** @nullable */
@@ -1192,7 +1214,7 @@ export interface MappingTableModel {
   name: MultiLanguageModel;
   publicationLevel?: PublicationLevel;
   publicationLevelProposal?: PublicationLevel;
-  publisher: AgentModel;
+  publisher: IdentifierNameModel;
   registrationStatus?: RegistrationStatus;
   registrationStatusProposal?: RegistrationStatus;
   responsibleDeputy?: IopPersonModel;
@@ -1200,6 +1222,7 @@ export interface MappingTableModel {
   system: SystemInfoModel;
   source: MappingTableUriModel;
   target: MappingTableUriModel;
+  tenant: AgentModel;
   /** @nullable */
   themes?: VocabularyEntryModel[] | null;
   /** @nullable */
@@ -1254,7 +1277,7 @@ export interface PublicServiceInputModel {
   /** @nullable */
   lifeEvents?: CodeInputModel[] | null;
   name: MultiLanguageModel;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
   /** @nullable */
   relations?: IdModel[] | null;
   /** @nullable */
@@ -1265,6 +1288,7 @@ export interface PublicServiceInputModel {
   sectors?: ThemeInputModel[] | null;
   /** @nullable */
   spatial?: string[] | null;
+  tenant: IdentifierInputModel;
   /** @nullable */
   thematicAreas?: ThemeInputModel[] | null;
   /** @nullable */
@@ -1291,7 +1315,7 @@ export interface PublicServiceModel {
   name: MultiLanguageModel;
   publicationLevel?: PublicationLevel;
   publicationLevelProposal?: PublicationLevel;
-  publisher: AgentModel;
+  publisher: IdentifierNameModel;
   registrationStatus?: RegistrationStatus;
   registrationStatusProposal?: RegistrationStatus;
   /** @nullable */
@@ -1305,6 +1329,7 @@ export interface PublicServiceModel {
   system: SystemInfoModel;
   /** @nullable */
   spatial?: string[] | null;
+  tenant: AgentModel;
   /** @nullable */
   thematicAreas?: VocabularyEntryModel[] | null;
   /** @nullable */
@@ -1384,7 +1409,7 @@ export interface SchemaProperty {
   /** @nullable */
   allowedValues?: string[] | null;
   /** @nullable */
-  conformsTo?: string | null;
+  conformsTo?: string[] | null;
   description?: MultiLanguageModel;
   label?: MultiLanguageModel;
   /** @nullable */
@@ -1472,6 +1497,8 @@ export interface SearchCountResultModel {
   /** @nullable */
   businessEvents?: VocabularyEntryModelSearchCountResultItem[] | null;
   /** @nullable */
+  dcatCatalogs?: DcatCatalogModelSearchCountResultItem[] | null;
+  /** @nullable */
   conceptValueTypes?: ConceptTypeSearchCountResultItem[] | null;
   /** @nullable */
   formats?: VocabularyEntryModelSearchCountResultItem[] | null;
@@ -1522,6 +1549,7 @@ export interface SearchResultModel {
   registrationStatusProposal?: RegistrationStatus;
   structure?: SearchStructureOption;
   system?: SystemInfoModel;
+  tenant: AgentModel;
   /** @nullable */
   themes?: VocabularyEntryModel[] | null;
   title: MultiLanguageModel;
@@ -1600,6 +1628,7 @@ pageSize?: number;
 export type GetConceptsParams = {
 conceptIdentifier?: string;
 publisherIdentifier?: string;
+tenantIdentifier?: string;
 version?: string;
 publicationLevel?: PublicationLevel;
 registrationStatus?: RegistrationStatus;
@@ -1788,6 +1817,7 @@ export type GetDataServicesParams = {
 accessRights?: string;
 dataServiceIdentifier?: string;
 publisherIdentifier?: string;
+tenantIdentifier?: string;
 publicationLevel?: PublicationLevel;
 registrationStatus?: RegistrationStatus;
 /**
@@ -1855,6 +1885,7 @@ export type GetDatasetsParams = {
 accessRights?: string;
 datasetIdentifier?: string;
 publisherIdentifier?: string;
+tenantIdentifier?: string;
 publicationLevel?: PublicationLevel;
 registrationStatus?: RegistrationStatus;
 /**
@@ -1916,6 +1947,8 @@ pageSize?: number;
 };
 
 export type GetDcatCatalogsParams = {
+publisherIdentifier?: string;
+tenantIdentifier?: string;
 /**
  * Page number.
  */
@@ -1954,6 +1987,7 @@ export type PostFilterConfigurationsByIdBody = {
 export type GetMappingTablesParams = {
 mappingTableIdentifier?: string;
 publisherIdentifier?: string;
+tenantIdentifier?: string;
 version?: string;
 codeSystemUri?: string;
 publicationLevel?: PublicationLevel;
@@ -2023,6 +2057,7 @@ pageSize?: number;
 export type GetPublicServicesParams = {
 publicServiceIdentifier?: string;
 publisherIdentifier?: string;
+tenantIdentifier?: string;
 publicationLevel?: PublicationLevel;
 registrationStatus?: RegistrationStatus;
 /**
@@ -2072,6 +2107,10 @@ attributedAgents?: string[];
  * Only results corresponding to one of the specified business events are returned
  */
 businessEvents?: string[];
+/**
+ * Only datasets recorded in one of the specified DCAT catalogues (by id) are returned
+ */
+dcatCatalogs?: string[];
 /**
  * Only results corresponding to one of the specified IOP concept value types (CodeList, Date, Numeric, String) are returned.
  */
@@ -2161,6 +2200,10 @@ attributedAgents?: string[];
  * Only results corresponding to one of the specified business events are returned
  */
 businessEvents?: string[];
+/**
+ * Only datasets recorded in one of the specified DCAT catalogues (by id) are counted
+ */
+dcatCatalogs?: string[];
 /**
  * Only results corresponding to one of the specified IOP concept value types (CodeList, Date, Numeric, String) are counted.
  */
@@ -10222,7 +10265,7 @@ export const getGetDcatCatalogsUrl = (params?: GetDcatCatalogsParams,) => {
 }
 
 /**
- * @summary Gets all the DCAT catalogs.
+ * @summary Gets the DCAT catalogs matching the given filters.
  */
 export const getDcatCatalogs = async (params?: GetDcatCatalogsParams, options?: Parameters<typeof iopCoreFetch>[1]): Promise<DcatCatalogModel[]> => {
 
@@ -10269,7 +10312,7 @@ export type GetDcatCatalogsQueryError = ErrorType<unknown>
 
 
 /**
- * @summary Gets all the DCAT catalogs.
+ * @summary Gets the DCAT catalogs matching the given filters.
  */
 
 export function useGetDcatCatalogs<TData = Awaited<ReturnType<typeof getDcatCatalogs>>, TError = ErrorType<unknown>>(
@@ -14978,7 +15021,7 @@ export const getGetSearchUrl = (params?: GetSearchParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["accessRights","attributedAgents","businessEvents","conceptValueTypes","formats","keywords","licenses","levels","levelProposals","lifeEvents","publishers","statuses","statusProposals","themes","types"];
+    const explodeParameters = ["accessRights","attributedAgents","businessEvents","dcatCatalogs","conceptValueTypes","formats","keywords","licenses","levels","levelProposals","lifeEvents","publishers","statuses","statusProposals","themes","types"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
       value.forEach((v) => {
@@ -15072,7 +15115,7 @@ export const getGetSearchCountUrl = (params?: GetSearchCountParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["accessRights","attributedAgents","businessEvents","conceptValueTypes","formats","keywords","levels","levelProposals","licenses","lifeEvents","publishers","statuses","statusProposals","themes","types"];
+    const explodeParameters = ["accessRights","attributedAgents","businessEvents","dcatCatalogs","conceptValueTypes","formats","keywords","levels","levelProposals","licenses","lifeEvents","publishers","statuses","statusProposals","themes","types"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
       value.forEach((v) => {

@@ -51,6 +51,7 @@ export class DcatApChV2DatasetAdapter {
       title: result.title,
       description: result.description,
       publisher: result.publisher,
+      tenant: result.tenant,
       themes: result.themes,
       accessRights: result.accessRights,
       system: result.system ?? {},
@@ -147,7 +148,7 @@ export class DcatApChV2DatasetAdapter {
     return {
       id: publisher?.identifier ?? undefined,
       name: publisher?.name ?? {},
-      homepage: publisher?.homePage ?? undefined,
+      homepage: undefined,
     }
   }
 

@@ -51,7 +51,7 @@ export class DcatApChV2DatasetAdapter {
       title: result.title,
       description: result.description,
       publisher: result.publisher,
-      tenant: result.publisher,
+      tenant: result.tenant,
       themes: result.themes,
       accessRights: result.accessRights,
       system: result.system ?? {},

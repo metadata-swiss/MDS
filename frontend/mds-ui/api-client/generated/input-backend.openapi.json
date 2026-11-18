@@ -1631,6 +1631,7 @@
           "description",
           "identifier",
           "publisher",
+          "tenant",
           "title",
           "type"
         ],
@@ -1701,6 +1702,9 @@
           },
           "system": {
             "$ref": "#/components/schemas/SystemInfoModel"
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/AgentModel"
           },
           "themes": {
             "type": "array",

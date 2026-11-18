@@ -458,6 +458,12 @@ export interface KeywordModel {
   uri?: string | null;
 }
 
+export interface IdentifierNameInputModel {
+  /** @nullable */
+  identifier?: string | null;
+  name?: MultiLanguageModel;
+}
+
 export interface EmailInputModel {
   /** @nullable */
   email: string | null;
@@ -497,11 +503,12 @@ export interface DataServiceInputModel {
   /** @nullable */
   modified?: string | null;
   previousVersion?: IdModel;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
   responsibleDeputy?: EmailInputModel;
   responsiblePerson?: EmailInputModel;
   /** @nullable */
   servesDatasets?: IdModel[] | null;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themes?: ThemeInputModel[] | null;
   title: MultiLanguageModel;
@@ -643,10 +650,11 @@ export interface DatasetReferenceModel {
 
 export interface DcatCatalogInputModel {
   description: MultiLanguageModel;
-  title: MultiLanguageModel;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themeTaxonomy?: string[] | null;
+  title: MultiLanguageModel;
 }
 
 export interface DcatCatalogModel {
@@ -797,7 +805,7 @@ export interface DcatDatasetInputModel {
   previousVersion?: IdModel;
   /** @nullable */
   processId?: string | null;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
   /** @nullable */
   qualifiedAttributions?: DcatQualifiedAttributionInputModel[] | null;
   qualifiedAttributionComplement?: MultiLanguageModel;
@@ -814,6 +822,7 @@ export interface DcatDatasetInputModel {
   spatial?: string[] | null;
   /** @nullable */
   temporalCoverage?: PeriodOfTimeModel[] | null;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themes?: ThemeInputModel[] | null;
   title: MultiLanguageModel;
@@ -1042,11 +1051,12 @@ export interface IopConceptInputModel {
   numberDecimals?: number | null;
   /** @nullable */
   pattern?: string | null;
+  publisher: IdentifierNameInputModel;
   /** @nullable */
   replaces?: IdModel[] | null;
-  publisher: IdentifierInputModel;
   responsibleDeputy?: EmailInputModel;
   responsiblePerson: EmailInputModel;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themes?: ThemeInputModel[] | null;
   /** @nullable */
@@ -1170,11 +1180,12 @@ export interface MappingTableInputModel {
   /** @nullable */
   keywords?: KeywordModel[] | null;
   name: MultiLanguageModel;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
   responsibleDeputy?: EmailInputModel;
   responsiblePerson: EmailInputModel;
   source: UriInputModel;
   target: UriInputModel;
+  tenant: IdentifierInputModel;
   /** @nullable */
   themes?: ThemeInputModel[] | null;
   /** @nullable */
@@ -1266,7 +1277,7 @@ export interface PublicServiceInputModel {
   /** @nullable */
   lifeEvents?: CodeInputModel[] | null;
   name: MultiLanguageModel;
-  publisher: IdentifierInputModel;
+  publisher: IdentifierNameInputModel;
   /** @nullable */
   relations?: IdModel[] | null;
   /** @nullable */
@@ -1277,6 +1288,7 @@ export interface PublicServiceInputModel {
   sectors?: ThemeInputModel[] | null;
   /** @nullable */
   spatial?: string[] | null;
+  tenant: IdentifierInputModel;
   /** @nullable */
   thematicAreas?: ThemeInputModel[] | null;
   /** @nullable */
@@ -1537,6 +1549,7 @@ export interface SearchResultModel {
   registrationStatusProposal?: RegistrationStatus;
   structure?: SearchStructureOption;
   system?: SystemInfoModel;
+  tenant: AgentModel;
   /** @nullable */
   themes?: VocabularyEntryModel[] | null;
   title: MultiLanguageModel;

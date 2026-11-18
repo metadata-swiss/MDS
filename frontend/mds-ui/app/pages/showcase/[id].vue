@@ -12,8 +12,6 @@ import { useThemes } from '~/composables/useDatasets'
 import { getDatasetsByIdentifier } from '~~/api-client/generated/iop-core'
 import { DcatApChV2DatasetAdapter } from '~/model/dataset/dcat-ap-ch-v2-dataset-adapter'
 import { ensureFound } from '~/utils/ensureFound'
-import { useOrganizations } from '~/composables/useOrganizations'
-import { organizationHomepage } from '~/model/organizations'
 
 const route = useRoute()
 const { locale, t } = useI18n()
@@ -73,9 +71,6 @@ const { data: datasetModels } = await useAsyncData(`${route.path}:datasets`, () 
   }),
 ))
 
-const { query: organizationsQuery, organizations } = useOrganizations()
-await organizationsQuery.suspense().catch(() => undefined)
-
 const showcaseDatasets = computed(() => (datasetModels.value ?? []).map(({ identifier, label, model }) => {
   if (!model) {
     return { key: identifier, title: label || identifier }
@@ -86,7 +81,7 @@ const showcaseDatasets = computed(() => (datasetModels.value ?? []).map(({ ident
     id: dataset.id,
     title: dataset.title,
     publisherName: localize(dataset.publisher.name, locale.value),
-    publisherHomepage: dataset.publisher.homepage ?? organizationHomepage(organizations.value, dataset.publisher.id),
+    publisherHomepage: dataset.publisher.homepage,
   }
 }))
 

@@ -145,12 +145,10 @@ export class DcatApChV2DatasetAdapter {
    */
   get publisher() {
     const publisher = this.#dataset.publisher
-    const tenant = this.#dataset.tenant
-    const publisherIsTenant = !!publisher?.identifier && publisher.identifier.toLowerCase() === tenant?.identifier?.toLowerCase()
     return {
       id: publisher?.identifier ?? undefined,
       name: publisher?.name ?? {},
-      homepage: publisherIsTenant ? tenant?.homePage ?? undefined : undefined,
+      homepage: undefined,
     }
   }
 

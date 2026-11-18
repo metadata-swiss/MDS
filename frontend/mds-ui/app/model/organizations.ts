@@ -21,17 +21,6 @@ export function organizationLabel(organization: AgentModel, lang: string) {
 }
 
 /**
- * Get the homepage of the organization with the given identifier, if it is one of the organizations.
- */
-export function organizationHomepage(organizations: AgentModel[], identifier: string | undefined) {
-  const wanted = identifier?.toLowerCase()
-  if (!wanted) {
-    return undefined
-  }
-  return organizations.find(organization => organization.identifier?.toLowerCase() === wanted)?.homePage ?? undefined
-}
-
-/**
  * Get the id of the parent organization, if any.
  */
 export function getParentId(organization: AgentModel) {

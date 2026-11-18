@@ -18,8 +18,6 @@ import { useSeoMeta } from 'nuxt/app'
 import OdsTagList from '~/components/dataset-detail/OdsTagList.vue'
 import OdsItemKind from '~/components/dataset-detail/OdsItemKind.vue'
 import { ensureFound } from '~/utils/ensureFound'
-import { useOrganizations } from '~/composables/useOrganizations'
-import { organizationHomepage } from '~/model/organizations'
 
 // Loaded only on this page and only when a preview is shown: it brings the table and chart libraries.
 const OdsPreview = defineAsyncComponent(() => import('~/components/dataset-detail/OdsPreview.vue'))
@@ -43,11 +41,6 @@ const dataset = computed(() => {
   }
   return new DcatApChV2DatasetAdapter(datasetModel.value, locale.value as AppLanguage, t)
 })
-
-const { query: organizationsQuery, organizations } = useOrganizations()
-
-const publisherHomepage = computed(() => dataset.value?.publisher.homepage
-  ?? organizationHomepage(organizations.value, dataset.value?.publisher.id))
 
 const distribution = computed(() => {
   if (!dataset.value) {
@@ -120,7 +113,7 @@ const toDatasetHref = computed(() => localePath('/datasets/' + datasetId))
 function gotToDataset() {
   router.push(toDatasetHref.value)
 }
-await Promise.all([suspense(), organizationsQuery.suspense().catch(() => undefined)])
+await suspense()
 ensureFound(datasetModel.value, query.error.value)
 ensureFound(distribution.value)
 </script>
@@ -191,10 +184,10 @@ ensureFound(distribution.value)
           class="authors__names"
         >
           <a
-            v-if="publisherHomepage"
+            v-if="dataset.publisher.homepage"
             class="link author__name link--external"
             target="_blank"
-            :href="publisherHomepage"
+            :href="dataset.publisher.homepage"
           >{{ localize(dataset.publisher.name, locale) }}</a>
           <div v-else>
             {{ localize(dataset.publisher.name, locale) }}

@@ -118,13 +118,8 @@ export function useDatasetsSearch() {
           },
           {
             id: 'format',
-            title: t('message.dataset_detail.format'),
+            title: t('message.dataset_search.formats'),
             items: (counts?.formats ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language) || item.value.code || '', count: item.count ?? 0 })),
-          },
-          {
-            id: 'license',
-            title: t('message.dataset_detail.properties.license'),
-            items: (counts?.licenses ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language) || item.value.code || '', count: item.count ?? 0 })),
           },
           {
             id: 'keywords',
@@ -134,6 +129,16 @@ export function useDatasetsSearch() {
             items: (counts?.keywords ?? [])
               .filter(item => item.value && ((item.count ?? 0) >= KEYWORD_MIN_COUNT || selectedKeywords.includes(item.value)))
               .map(item => ({ id: item.value ?? '', title: item.value ?? '', count: item.count ?? 0 })),
+          },
+          {
+            id: 'license',
+            title: t('message.dataset_search.licenses'),
+            items: (counts?.licenses ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language) || item.value.code || '', count: item.count ?? 0 })),
+          },
+          {
+            id: 'organization',
+            title: t('message.dataset_search.organization'),
+            items: (counts?.publishers ?? []).map(item => ({ id: item.value.identifier ?? '', title: organizationLabel(item.value, language), count: item.count ?? 0 })),
           },
         ]
       })

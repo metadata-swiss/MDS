@@ -36,6 +36,9 @@
     "dataset_search": {
       "catalogues": "Catalogues",
       "tenant": "Tenant",
+      "formats": "Formats",
+      "licenses": "Licenses",
+      "organization": "Organization",
       "search_placeholder": "Search datasets",
       "search_button": "Search",
       "search_results": "Search results",

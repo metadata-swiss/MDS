@@ -36,9 +36,6 @@
     },
     "dataset_search": {
       "catalogues": "Catalogues",
-      "formats": "Formats",
-      "licenses": "Licences",
-      "organization": "Organisation",
       "search_placeholder": "Rechercher des jeux de données",
       "search_button": "Rechercher",
       "search_results": "Résultats de recherche",

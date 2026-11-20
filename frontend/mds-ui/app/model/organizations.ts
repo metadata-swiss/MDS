@@ -3,7 +3,7 @@ import { localize } from '~/utils/getCurrentTranslation'
 
 /**
  * An organization is an iop-core agent. Agents returned by iop-core always have an id.
- * Pages link to organizations by their identifier, which is also what GET /api/Search filters publishers by.
+ * Pages link to organizations by their identifier, which is also what GET /api/Search filters tenants by.
  */
 export type Organization = AgentModel & { id: string }
 

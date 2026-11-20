@@ -36,6 +36,7 @@
     },
     "dataset_search": {
       "catalogues": "Cataloghi",
+      "tenant": "Mandante",
       "search_placeholder": "Cerca set di dati",
       "search_button": "Cerca",
       "search_results": "Risultati della ricerca",

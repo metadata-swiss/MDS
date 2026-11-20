@@ -35,6 +35,7 @@
     },
     "dataset_search": {
       "catalogues": "Catalogues",
+      "tenant": "Tenant",
       "search_placeholder": "Search datasets",
       "search_button": "Search",
       "search_results": "Search results",

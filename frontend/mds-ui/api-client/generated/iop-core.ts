@@ -760,7 +760,7 @@ export interface DcatDistributionInputModel {
 }
 
 export interface DcatQualifiedAttributionInputModel {
-  agent: IdentifierInputModel;
+  agent: IdentifierNameInputModel;
   hadRole: CodeInputModel;
 }
 
@@ -872,7 +872,7 @@ export interface DcatDistributionModel {
 }
 
 export interface DcatQualifiedAttributionModel {
-  agent?: AgentModel;
+  agent?: IdentifierNameModel;
   hadRole?: VocabularyEntryModel;
 }
 
@@ -989,6 +989,13 @@ export interface FilterDefinitionModel {
 export interface FilterConfigurationModel {
   /** @nullable */
   filters: FilterDefinitionModel[] | null;
+}
+
+export interface IdentifierNameModelSearchCountResultItem {
+  count?: number;
+  value: IdentifierNameModel;
+  /** @nullable */
+  searchKey?: string | null;
 }
 
 export interface IdentifierVersionExistsModel {
@@ -1513,13 +1520,15 @@ export interface SearchCountResultModel {
   /** @nullable */
   publicationLevels?: PublicationLevelSearchCountResultItem[] | null;
   /** @nullable */
-  publishers?: AgentModelSearchCountResultItem[] | null;
+  publishers?: IdentifierNameModelSearchCountResultItem[] | null;
   /** @nullable */
   registrationStatuses?: RegistrationStatusSearchCountResultItem[] | null;
   /** @nullable */
   registrationStatusProposals?: RegistrationStatusSearchCountResultItem[] | null;
   /** @nullable */
   structures?: SearchStructureOptionSearchCountResultItem[] | null;
+  /** @nullable */
+  tenants?: AgentModelSearchCountResultItem[] | null;
   /** @nullable */
   themes?: VocabularyEntryModelSearchCountResultItem[] | null;
   totalDocCount?: number;
@@ -1544,7 +1553,7 @@ export interface SearchResultModel {
   lifeEvents?: VocabularyEntryModel[] | null;
   publicationLevel?: PublicationLevel;
   publicationLevelProposal?: PublicationLevel;
-  publisher: AgentModel;
+  publisher: IdentifierNameModel;
   registrationStatus?: RegistrationStatus;
   registrationStatusProposal?: RegistrationStatus;
   structure?: SearchStructureOption;
@@ -2140,7 +2149,7 @@ levelProposals?: PublicationLevel[];
  */
 lifeEvents?: string[];
 /**
- * Only results with one of the specified publishers are returned
+ * Only results with one of the specified publishers (by identifier) are returned
  */
 publishers?: string[];
 /**
@@ -2155,6 +2164,10 @@ statusProposals?: RegistrationStatus[];
  * Only results for datasets are returned.
  */
 structure?: SearchStructureOption;
+/**
+ * Only results owned by one of the specified tenants (by identifier) are returned
+ */
+tenants?: string[];
 /**
  * Only results corresponding to one of the specified themes are returned
  */
@@ -2233,7 +2246,7 @@ licenses?: string[];
  */
 lifeEvents?: string[];
 /**
- * Only results with one of the specified publishers are counted
+ * Only results with one of the specified publishers (by identifier) are counted
  */
 publishers?: string[];
 /**
@@ -2248,6 +2261,10 @@ statusProposals?: RegistrationStatus[];
  * Only results for datasets are returned.
  */
 structure?: SearchStructureOption;
+/**
+ * Only results owned by one of the specified tenants (by identifier) are counted
+ */
+tenants?: string[];
 /**
  * Only results corresponding to one of the specified themes are counted
  */
@@ -15021,7 +15038,7 @@ export const getGetSearchUrl = (params?: GetSearchParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["accessRights","attributedAgents","businessEvents","dcatCatalogs","conceptValueTypes","formats","keywords","licenses","levels","levelProposals","lifeEvents","publishers","statuses","statusProposals","themes","types"];
+    const explodeParameters = ["accessRights","attributedAgents","businessEvents","dcatCatalogs","conceptValueTypes","formats","keywords","licenses","levels","levelProposals","lifeEvents","publishers","statuses","statusProposals","tenants","themes","types"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
       value.forEach((v) => {
@@ -15115,7 +15132,7 @@ export const getGetSearchCountUrl = (params?: GetSearchCountParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    const explodeParameters = ["accessRights","attributedAgents","businessEvents","dcatCatalogs","conceptValueTypes","formats","keywords","levels","levelProposals","licenses","lifeEvents","publishers","statuses","statusProposals","themes","types"];
+    const explodeParameters = ["accessRights","attributedAgents","businessEvents","dcatCatalogs","conceptValueTypes","formats","keywords","levels","levelProposals","licenses","lifeEvents","publishers","statuses","statusProposals","tenants","themes","types"];
 
     if (Array.isArray(value) && explodeParameters.includes(key)) {
       value.forEach((v) => {

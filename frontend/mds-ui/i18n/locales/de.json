@@ -36,6 +36,7 @@
     },
     "dataset_search": {
       "catalogues": "Kataloge",
+      "tenant": "Mandant",
       "formats": "Formate",
       "licenses": "Lizenzen",
       "organization": "Organisation",

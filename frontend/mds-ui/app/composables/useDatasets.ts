@@ -15,7 +15,7 @@ import { organizationLabel } from '~/model/organizations'
 import { localize } from '~/utils/getCurrentTranslation'
 
 // In the order of the original opendata.swiss filters
-export const datasetFacets = ['catalogues', 'categories', 'format', 'keywords', 'license', 'organization'] as const
+export const datasetFacets = ['catalogues', 'categories', 'format', 'keywords', 'license', 'organization', 'publisher'] as const
 const KEYWORD_MIN_COUNT = 1
 
 // All public datasets of iop-core are shown, not only those of the opendata.swiss catalog.
@@ -61,7 +61,8 @@ export function useDatasetsSearch() {
       dcatCatalogs: selectedFacets.catalogues?.value,
       // The categories are the I14Y themes, not the EU data themes of the catalog records.
       themes: selectedFacets.categories?.value,
-      publishers: selectedFacets.organization?.value,
+      tenants: selectedFacets.organization?.value,
+      publishers: selectedFacets.publisher?.value,
       formats: selectedFacets.format?.value,
       licenses: selectedFacets.license?.value,
       keywords: selectedFacets.keywords?.value,
@@ -125,8 +126,15 @@ export function useDatasetsSearch() {
           },
           {
             id: 'organization',
-            title: t('message.dataset_search.organization'),
-            items: (counts?.publishers ?? []).map(item => ({ id: item.value.identifier ?? '', title: organizationLabel(item.value, language), count: item.count ?? 0 })),
+            title: t('message.dataset_search.tenant'),
+            items: (counts?.tenants ?? []).map(item => ({ id: item.value.identifier ?? '', title: organizationLabel(item.value, language), count: item.count ?? 0 })),
+          },
+          {
+            id: 'publisher',
+            title: t('message.dataset_detail.publisher'),
+            items: (counts?.publishers ?? [])
+              .filter(item => item.value.identifier)
+              .map(item => ({ id: item.value.identifier ?? '', title: localize(item.value.name, language) || item.value.identifier || '', count: item.count ?? 0 })),
           },
         ]
       })
@@ -151,7 +159,7 @@ export function useDatasetCountByOrganization() {
   const query = useGetSearchCount(OPEN_DATASETS)
 
   const counts = computed<Record<string, number>>(() => Object.fromEntries(
-    (query.data.value?.publishers ?? []).map(item => [item.value.identifier ?? '', item.count ?? 0]),
+    (query.data.value?.tenants ?? []).map(item => [item.value.identifier ?? '', item.count ?? 0]),
   ))
 
   return { query, counts }

@@ -112,7 +112,7 @@ export function useActiveFacets({ facets, getAvailableFacetsLocalized }: UseActi
 
   const availableFacets = getAvailableFacetsLocalized(locale)
 
-  return computed<FacetGroup[]>(() => {
-    return availableFacets.value.filter(f => facets.includes(f.id)).sort((a, b) => a.title.localeCompare(b.title))
-  })
+  return computed<FacetGroup[]>(() => facets
+    .map(id => availableFacets.value.find(facet => facet.id === id))
+    .filter((facet): facet is FacetGroup => facet !== undefined))
 }

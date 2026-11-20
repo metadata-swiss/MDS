@@ -1,16 +1,20 @@
 <script lang="ts" setup>
-import type { PagesCollectionItem } from '@nuxt/content'
 import { useBreadcrumbs } from '~/composables/breadcrumbs'
+import { loadPageBreadcrumb } from '~/utils/breadcrumbs'
 import OdsHandbookPage from '~/components/handbook/OdsHandbookPage.vue'
 
 const route = useRoute()
 const { locale } = useI18n()
 
-const breadcrumbs = await useBreadcrumbs({ route, collection: 'pages' })
+const breadcrumbs = await useBreadcrumbs({
+  route,
+  loadContent: loadPageBreadcrumb(locale),
+})
 
-// The handbook page exists only in some languages; without it the page stays empty, as before.
-const { data: page } = await useFetch<PagesCollectionItem>('/api/content/pages/handbook', {
-  query: { locale: locale.value },
+const { data: page } = await useAsyncData(route.path, () => {
+  return queryPublishedContent('pages')
+    .where('path', 'LIKE', `%handbook.${locale.value}`)
+    .first()
 })
 
 useSeoMeta({

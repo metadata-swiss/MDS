@@ -8,10 +8,18 @@ const route = useRoute()
 const { locale, t } = useI18n()
 const { year, month, slug } = route.params
 
-const { data: post, error } = await useFetch(`/api/content/blog/post/${encodeURIComponent(slug)}`, {
-  query: { locale: locale.value, month: `${year}-${month}` },
+const { data: post } = await useAsyncData(route.path, () => {
+  return queryPublishedContent('blog')
+    .where('path', 'LIKE', `%${slug}.${locale.value}`)
+    .where('date', '>', `${year}-${month.padStart(2, '0')}-01`)
+    .where('date', '<', `${year}-${month.padStart(2, '0')}-32`)
+    .orWhere(q =>
+      q.where('slug', '=', slug)
+        .where('path', 'LIKE', `%${slug}.${locale.value}`),
+    )
+    .first()
 })
-ensureFound(post.value, error.value)
+ensureFound(post.value)
 
 useSeoMeta({
   title: `${post.value?.title} | ${t('message.header.navigation.blog')} | opendata.swiss`,

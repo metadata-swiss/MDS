@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import OdsSection, { type SectionLayout } from '~/components/content/OdsSection.vue'
-import type { BlogPostSummary } from '~/model/blog'
+import { useAsyncData } from '#app'
 import OdsBlogPostCard from '../blog/OdsBlogPostCard.vue'
 
 const { max: limit } = defineProps<{
@@ -11,12 +11,28 @@ const { max: limit } = defineProps<{
 
 const { locale } = useI18n()
 
-// Pinned posts first, then the newest other posts (server/api/content/blog/latest.get.ts)
-const { data } = await useFetch<{ pinned: BlogPostSummary[], latest: BlogPostSummary[] }>('/api/content/blog/latest', {
-  query: { locale: locale.value, max: limit },
+const { data: pinnedPosts } = await useAsyncData('blog-pinned', async () => {
+  return queryPublishedContent('blog')
+    .where('path', 'LIKE', `%.${locale.value}`)
+    .where('pinned', '=', true)
+    .limit(limit)
+    .all()
 })
-const pinnedPosts = computed(() => data.value?.pinned ?? [])
-const latestPosts = computed(() => data.value?.latest ?? [])
+
+const { data: latestPosts } = await useAsyncData('blog-latest', async () => {
+  let query = queryPublishedContent('blog')
+    .where('path', 'LIKE', `%.${locale.value}`)
+    .order('date', 'DESC')
+
+  if (pinnedPosts.value?.length) {
+    query = query.andWhere((query) => {
+      return pinnedPosts.value!.reduce((acc, pinned) => acc.where('id', '<>', pinned.id), query)
+    })
+  }
+
+  return query.limit(limit)
+    .all()
+})
 </script>
 
 <template>

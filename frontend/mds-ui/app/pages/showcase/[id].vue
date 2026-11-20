@@ -17,11 +17,29 @@ const route = useRoute()
 const { locale, t } = useI18n()
 const { id } = route.params
 
-// The showcase with its contact person (server/api/content/showcases/[id].get.ts)
-const { data: showcase, error } = await useFetch(`/api/content/showcases/${encodeURIComponent(id)}`, {
-  query: { locale: locale.value },
+const { data: showcase } = await useAsyncData(route.path, async () => {
+  const currentTranslation = await queryPublishedContent('showcases')
+    .where('stem', 'LIKE', `%${id}.${locale.value}`)
+    .where('active', '=', true)
+    .first()
+
+  if (!currentTranslation) {
+    return null
+  }
+
+  const germanTranslation = await queryPublishedContent('showcases')
+    .where('stem', 'LIKE', `%${id}.de`)
+    .where('active', '=', true)
+    .select('relationships')
+    .first()
+
+  return {
+    ...currentTranslation,
+    contactDetails: germanTranslation?.relationships
+      .find(relationship => relationship.type === 'pointOfContact'),
+  }
 })
-ensureFound(showcase.value, error.value)
+ensureFound(showcase.value)
 
 const breadcrumbs = [
   homePageBreadcrumb(t),

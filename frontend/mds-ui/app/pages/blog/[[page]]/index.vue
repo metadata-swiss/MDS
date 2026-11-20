@@ -11,14 +11,23 @@ const route = useRoute()
 const { locale, t } = useI18n()
 const localePath = useLocalePath()
 
+const PAGE_SIZE = 1 // Number of posts per page
 const page = parseInt(route.params.page) || 1
 
-// One page of posts and the number of pages; the page size is set in server/api/content/blog/index.get.ts.
-const { data } = await useFetch('/api/content/blog', {
-  query: { locale: locale.value, page },
+const { data: posts } = await useAsyncData(route.path, () => {
+  return queryPublishedContent('blog')
+    .where('path', 'LIKE', `%.${locale.value}`)
+    .order('date', 'DESC')
+    .skip((page - 1) * PAGE_SIZE)
+    .limit(PAGE_SIZE)
+    .all()
 })
-const posts = computed(() => data.value?.posts ?? [])
-const pageCount = computed(() => data.value?.pageCount ?? 0)
+const { data: pageCount } = await useAsyncData(route.path + '_pageCount', () => {
+  return queryPublishedContent('blog')
+    .where('path', 'LIKE', `%.${locale.value}`)
+    .order('date', 'DESC')
+    .count()
+})
 
 useSeoMeta({
   title: `${t('message.header.navigation.blog')} | opendata.swiss`,

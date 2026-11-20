@@ -2,13 +2,9 @@ import type { PagesCollectionItem } from '@nuxt/content'
 import type { ComputedRef } from 'vue'
 import type { OdsNavTabItem } from '~/model/ods-nav-tab-item'
 import { sortContent } from '~/utils/sortContent'
-import type { NAVIGATION_PAGE_FIELDS } from '#shared/content'
-
-// A page as returned by server/api/content/navigation.get.ts
-type NavigationPage = Pick<PagesCollectionItem, typeof NAVIGATION_PAGE_FIELDS[number]>
 
 const stemPattern = /pages\/(?<name>.+)\.\w\w/i
-const getSlug = (page: NavigationPage) => page.stem.match(stemPattern)?.groups?.name
+const getSlug = (page: PagesCollectionItem) => page.stem.match(stemPattern)?.groups?.name
 
 /**
  * Items of the main menu. app.vue keeps them when the language changes, so they follow the current language:
@@ -17,9 +13,11 @@ const getSlug = (page: NavigationPage) => page.stem.match(stemPattern)?.groups?.
 export async function useNavigationItems(): Promise<ComputedRef<OdsNavTabItem[]>> {
   const { t, locale } = useI18n()
 
-  // The query follows the language: a change loads the pages of the new language.
-  const { data: pages } = await useFetch<NavigationPage[]>('/api/content/navigation', {
-    query: { locale },
+  const { data: pages } = await useAsyncData(() => `navigation-pages:${locale.value}`, () => {
+    return queryPublishedContent('pages')
+      .where('path', 'LIKE', `%.${locale.value}`)
+      .where('mainMenu', '=', true)
+      .all()
   })
 
   return computed(() => {
@@ -66,7 +64,7 @@ interface PagesNavWithSubmenus {
   tempSubSubMenus: Record<string, OdsNavTabItem[] | undefined>
 }
 
-function nestSubmenus({ pagesSubMenu, tempSubSubMenus }: PagesNavWithSubmenus, page: NavigationPage): PagesNavWithSubmenus {
+function nestSubmenus({ pagesSubMenu, tempSubSubMenus }: PagesNavWithSubmenus, page: PagesCollectionItem): PagesNavWithSubmenus {
   const path = page.permalink ? page.permalink : getSlug(page)
   const menuItem: OdsNavTabItem = {
     label: page.title,

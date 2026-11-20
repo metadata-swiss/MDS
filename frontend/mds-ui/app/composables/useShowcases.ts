@@ -5,13 +5,11 @@ import type { FacetGroup } from '~/composables/useFacets'
 import { useThemes } from '~/composables/useDatasets'
 import { localize } from '~/utils/getCurrentTranslation'
 import { showcaseTypeLabel } from '~/utils/showcase-type'
-import type { SHOWCASE_CARD_FIELDS } from '#shared/content'
 
 // Until V4 the showcases are the Markdown files of the content repository, read with Nuxt Content.
 // In V4 they move into iop-core (iop-core-gaps.md, G11); then only usePublishedShowcases changes.
 
-// A showcase in the lists, as returned by server/api/content/showcases
-export type Showcase = Pick<ShowcasesCollectionItem, typeof SHOWCASE_CARD_FIELDS[number]>
+export type Showcase = ShowcasesCollectionItem
 
 export const showcaseFacets = ['categories', 'keywords', 'type'] as const
 type ShowcaseFacet = typeof showcaseFacets[number]
@@ -28,10 +26,11 @@ const facetValues: Record<ShowcaseFacet, (showcase: Showcase) => string[]> = {
 export async function usePublishedShowcases() {
   const { locale } = useI18n()
 
-  // The pages using this are created again for each address, so the language doesn't change during their life.
-  const { data } = await useFetch<Showcase[]>('/api/content/showcases', {
-    query: { locale: locale.value },
-  })
+  const { data } = await useAsyncData(() => `showcases:${locale.value}`, () => queryPublishedContent('showcases')
+    .where('stem', 'LIKE', `%.${locale.value}`)
+    .where('active', '=', true)
+    .order('title', 'ASC')
+    .all())
 
   return computed(() => data.value ?? [])
 }

@@ -39,12 +39,12 @@
 <script setup lang="ts">
 import OdsCard from '~/components/content/OdsCard.vue'
 import SvgIcon from '~/components/SvgIcon.vue'
-import type { BlogPostSummary } from '~/model/blog'
+import type { BlogCollectionItem } from '@nuxt/content'
 
 const { t, locale } = useI18n()
 
 const { post: collectionItem } = defineProps<{
-  post: BlogPostSummary
+  post: BlogCollectionItem
 }>()
 
 const post = computed(() => {

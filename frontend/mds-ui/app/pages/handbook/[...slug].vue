@@ -1,20 +1,60 @@
 <script lang="ts" setup>
-import type { HandbookCollectionItem } from '@nuxt/content'
+import { loadHandbookBreadcrumb } from '~/utils/breadcrumbs'
 import OdsHandbookPage from '~/components/handbook/OdsHandbookPage.vue'
+import { queryHandbook } from '~/composables/handbook'
 import { ensureFound } from '~/utils/ensureFound'
 
 const { locale, t } = useI18n()
 const route = useRoute()
 
-const breadcrumbs = await useBreadcrumbs({ route, collection: 'handbook' })
-
-// The server finds the article and checks that the address is its full address (parents, then the article).
-const slug = route.params.slug ?? []
-const segments = Array.isArray(slug) ? slug : [slug]
-const { data, error } = await useFetch<HandbookCollectionItem>(`/api/content/handbook/${segments.map(encodeURIComponent).join('/')}`, {
-  query: { locale: locale.value },
+const breadcrumbs = await useBreadcrumbs({
+  route,
+  loadContent: loadHandbookBreadcrumb(locale),
 })
-ensureFound(data.value, error.value)
+
+const { data } = await useAsyncData(route.path, async () => {
+  const slug = route.params.slug ?? []
+  const path = Array.isArray(slug) ? slug : [slug]
+
+  const articles = await queryHandbook().all()
+
+  const localizedArticles = articles.filter(article => article.path.endsWith(`.${locale.value}`))
+
+  // Find the article whose slug matches the last part of the path
+  const leaf = localizedArticles.find(article => article.slug === path[path.length - 1])
+
+  if (!leaf) {
+    return undefined
+  }
+
+  // verify parent chain by building the path from the leaf upwards
+  function getPathSegments(article: NonNullable<typeof leaf>): string[] {
+    const segments = [article.slug]
+    let current = article
+    while (current.parent) {
+      // Find parent in the current locale
+      let parent = articles.find(a => a.path.endsWith(`handbook/${current.parent}.${locale.value}`))
+
+      // Fallback to German version of parent if localized version is missing
+      if (!parent && locale.value !== 'de') {
+        parent = articles.find(a => a.path.endsWith(`handbook/${current.parent}.de.md`))
+      }
+
+      if (!parent) break
+      segments.unshift(parent.slug)
+      current = parent
+    }
+    return segments
+  }
+
+  const actualPath = getPathSegments(leaf)
+  if (actualPath.join('/') === path.join('/')) {
+    return leaf
+  }
+
+  return undefined
+})
+ensureFound(data.value)
 
 useSeoMeta({
   title: `${data.value?.title} | ${t('message.header.navigation.handbook')} | opendata.swiss`,

@@ -24,7 +24,7 @@
             :open="isSectionOpen(section)"
           >
             <NuxtLinkLocale
-              :to="getArticleUrl(section)"
+              :to="section.url"
               :class="['menu__item', 'menu__item--border', 'menu__item--condensed', { 'menu__item--active': page.id === section.id }]"
               style="margin-top: unset"
             >
@@ -33,7 +33,7 @@
             <NuxtLinkLocale
               v-for="article in getArticlesByParent(section)"
               :key="article.id"
-              :to="getArticleUrl(article)"
+              :to="article.url"
               :class="['menu__item', 'menu__item--border', 'menu__item--condensed', { 'menu__item--active': page.id === article.id }]"
               style="margin-top: unset"
             >
@@ -55,7 +55,7 @@ import { useRouter } from '#vue-router'
 import OdsCard from '../content/OdsCard.vue'
 import OdsAccordion from '~/components/OdsAccordion.vue'
 import OdsAccordionItem from '~/components/OdsAccordionItem.vue'
-import { queryHandbook, useGetArticleUrl } from '~/composables/handbook'
+import type { HandbookArticleLink } from '~/model/handbook'
 import { sortContent } from '~/utils/sortContent'
 
 const { t, locale } = useI18n()
@@ -67,8 +67,6 @@ const { page } = defineProps<{
 
 const searchInput = ref('')
 
-const getArticleUrl = await useGetArticleUrl()
-
 const router = useRouter()
 const localePath = useLocalePath()
 const onSearch = (value: string) => {
@@ -78,32 +76,30 @@ const onSearch = (value: string) => {
   }))
 }
 
-const { data: articles } = await useAsyncData('handbook-articles', () => queryHandbook().all())
+// The articles of the current language with their addresses (server/api/content/handbook/index.get.ts)
+const { data: articles } = await useFetch<HandbookArticleLink[]>('/api/content/handbook', {
+  query: { locale: locale.value },
+})
 
-const localizedArticles = computed(() => articles.value?.filter(article => article.path.endsWith(`.${locale.value}`)) || [])
-
-const getSlug = (article: HandbookCollectionItem) => article.slug
+const getSlug = (article: HandbookArticleLink) => article.slug
 
 const sections = computed(() => {
-  const sections = localizedArticles.value?.filter(article => !article.parent) || []
+  const sections = articles.value?.filter(article => !article.parent) || []
 
   return sortContent(sections, getSlug)
 })
 
-function getArticlesByParent(parent: HandbookCollectionItem) {
-  const articles = localizedArticles.value
-    ?.filter(article => article.parent && (
-      parent.path.endsWith(`handbook/${article.parent}.${locale.value}`)
-      || parent.path.endsWith(`handbook/${article.parent}.de.md`)
-    ))
+function getArticlesByParent(parent: HandbookArticleLink) {
+  const children = articles.value
+    ?.filter(article => article.parent && parent.path.endsWith(`handbook/${article.parent}.${locale.value}`))
 
-  return sortContent(articles, getSlug)
+  return sortContent(children, getSlug)
 }
 
-function isSectionOpen(section: HandbookCollectionItem) {
+function isSectionOpen(section: HandbookArticleLink) {
   if ('parent' in page) {
     if (page.parent) {
-      let current: HandbookCollectionItem | undefined = page as HandbookCollectionItem
+      let current: Pick<HandbookArticleLink, 'path' | 'parent'> | undefined = page
 
       while (current) {
         if (current.path === section.path) {
@@ -111,11 +107,9 @@ function isSectionOpen(section: HandbookCollectionItem) {
         }
 
         const currentParent: string | undefined = current.parent
-        current = articles.value?.find((article) => {
-          if (!currentParent) return false
-          return article.path.endsWith(`handbook/${currentParent}.${locale.value}`)
-            || (locale.value !== 'de' && article.path.endsWith(`handbook/${currentParent}.de.md`))
-        })
+        current = currentParent
+          ? articles.value?.find(article => article.path.endsWith(`handbook/${currentParent}.${locale.value}`))
+          : undefined
       }
 
       return false

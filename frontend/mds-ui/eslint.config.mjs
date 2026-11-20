@@ -27,6 +27,28 @@ export default withNuxt(
     },
   },
   {
+    // The app reads Nuxt Content only through server/api/content: a query in the app would run in the browser, which
+    // downloads the WebAssembly SQLite and the collection dumps (and fails behind some proxies).
+    files: ['app/**'],
+    rules: {
+      'no-restricted-syntax': ['error', {
+        selector: 'CallExpression[callee.name=/^queryCollection/]',
+        message: 'Read content through server/api/content (useFetch), not with queryCollection* in the app.',
+      }],
+      'no-restricted-imports': ['error', {
+        paths: [{
+          name: '@nuxt/content',
+          importNames: ['queryCollection', 'queryCollectionNavigation', 'queryCollectionItemSurroundings', 'queryCollectionSearchSections', 'useSearchCollection'],
+          message: 'Read content through server/api/content (useFetch).',
+        }],
+        patterns: [{
+          group: ['@nuxt/content/server'],
+          message: 'Server-only: use it in server/, behind server/api/content.',
+        }],
+      }],
+    },
+  },
+  {
     files: ['**/*.test.ts'],
     rules: {
       '@typescript-eslint/no-unused-expressions': 'off',

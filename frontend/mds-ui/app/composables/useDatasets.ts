@@ -14,7 +14,8 @@ import type { FacetGroup } from '~/composables/useFacets'
 import { organizationLabel } from '~/model/organizations'
 import { localize } from '~/utils/getCurrentTranslation'
 
-export const datasetFacets = ['catalogues', 'categories', 'organization', 'format', 'license', 'keywords'] as const
+// In the order of the original opendata.swiss filters
+export const datasetFacets = ['catalogues', 'categories', 'format', 'keywords', 'license', 'organization'] as const
 const KEYWORD_MIN_COUNT = 1
 
 // All public datasets of iop-core are shown, not only those of the opendata.swiss catalog.
@@ -104,19 +105,9 @@ export function useDatasetsSearch() {
             items: (counts?.themes ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language), count: item.count ?? 0 })),
           },
           {
-            id: 'organization',
-            title: t('message.dataset_detail.publisher'),
-            items: (counts?.publishers ?? []).map(item => ({ id: item.value.identifier ?? '', title: organizationLabel(item.value, language), count: item.count ?? 0 })),
-          },
-          {
             id: 'format',
-            title: t('message.dataset_detail.format'),
+            title: t('message.dataset_search.formats'),
             items: (counts?.formats ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language) || item.value.code || '', count: item.count ?? 0 })),
-          },
-          {
-            id: 'license',
-            title: t('message.dataset_detail.properties.license'),
-            items: (counts?.licenses ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language) || item.value.code || '', count: item.count ?? 0 })),
           },
           {
             id: 'keywords',
@@ -126,6 +117,16 @@ export function useDatasetsSearch() {
             items: (counts?.keywords ?? [])
               .filter(item => item.value && ((item.count ?? 0) >= KEYWORD_MIN_COUNT || selectedKeywords.includes(item.value)))
               .map(item => ({ id: item.value ?? '', title: item.value ?? '', count: item.count ?? 0 })),
+          },
+          {
+            id: 'license',
+            title: t('message.dataset_search.licenses'),
+            items: (counts?.licenses ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language) || item.value.code || '', count: item.count ?? 0 })),
+          },
+          {
+            id: 'organization',
+            title: t('message.dataset_search.organization'),
+            items: (counts?.publishers ?? []).map(item => ({ id: item.value.identifier ?? '', title: organizationLabel(item.value, language), count: item.count ?? 0 })),
           },
         ]
       })

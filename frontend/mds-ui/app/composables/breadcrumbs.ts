@@ -1,50 +1,31 @@
-import type { CollectionQueryBuilder } from '@nuxt/content'
 import type { Ref } from 'vue'
 import type { BreadcrumbItem } from '~/components/OdsBreadcrumbs.vue'
 import { getDatasetSearchFromSessionStorage, storeDatasetSearchInSessionStorage } from '~/utils/breadcrumb-session-storage'
 
-export interface LoadBreadcrumbContent {
-  (arg: { path: string }, index: number): CollectionQueryBuilder<{
-    id: string
-    title?: string
-    breadcrumb_title?: string
-  }>
-}
-
 interface Options {
   route: ReturnType<typeof useRoute>
-  loadContent: LoadBreadcrumbContent
+  /** pages: every segment is a page; handbook: the first segment is a page, the next ones handbook articles. */
+  collection: 'pages' | 'handbook'
 }
 
 type Translate = (key: string) => string
 
 /**
- * Breadcrumbs of a content page, one per path segment, titled from the content.
- * The queries run in useAsyncData, so the result comes with the server-rendered page and the browser doesn't query again.
+ * Breadcrumbs of a content page, one per path segment, titled from the content (server/api/content/breadcrumbs.get.ts).
+ * The result comes with the server-rendered page, so the browser doesn't load it again.
  */
-export async function useBreadcrumbs({ route, loadContent }: Options) {
-  const { t } = useI18n()
+export async function useBreadcrumbs({ route, collection }: Options) {
+  const { t, locale } = useI18n()
   const home = homePageBreadcrumb(t)
 
-  const { data } = await useAsyncData(`breadcrumbs:${route.path}`, async () => {
-    const breadcrumbs: BreadcrumbItem[] = []
-    const segments = route.path.split('/')
-      .filter(segment => segment)
-      .slice(1)
+  // The address without the language: /de/handbook/vorbereiten -> /handbook/vorbereiten
+  const path = '/' + route.path.split('/').filter(Boolean).slice(1).join('/')
 
-    while (segments.length) {
-      const path = '/' + segments.join('/')
-      const { id, breadcrumb_title, title } = await loadContent({ path }, segments.length - 1).first() || {}
-      breadcrumbs.unshift({
-        id, title: breadcrumb_title || title || path, path,
-      })
-      segments.pop()
-    }
-
-    return breadcrumbs
+  const { data } = await useFetch('/api/content/breadcrumbs', {
+    query: { collection, path, locale: locale.value },
   })
 
-  return data.value?.length ? [home, ...data.value] : []
+  return data.value?.length ? [home, ...data.value as BreadcrumbItem[]] : []
 }
 
 export function homePageBreadcrumb(t: Translate): BreadcrumbItem {

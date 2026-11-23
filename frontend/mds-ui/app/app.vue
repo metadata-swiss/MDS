@@ -71,7 +71,7 @@ onMounted(() => {
 
 useHead({
   htmlAttrs: {
-    lang: locale.value,
+    lang: () => locale.value,
   },
   bodyAttrs: {
     class: 'body--ods-brand',

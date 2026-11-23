@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import Select from './OdsSelect.vue'
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from '#imports'
 
 const switchLocalePath = useSwitchLocalePath()
@@ -39,15 +39,13 @@ defineProps({
 // CSS class
 const computedClass = computed(() => 'language-switcher')
 
-// Reactive selected locale (safe for hydration)
-const selectedLocale = ref(locale.value)
-
-// Handle language switching
-watch(selectedLocale, (newLocale) => {
-  if (newLocale !== locale.value) {
-    const newPath = switchLocalePath(newLocale)
-    navigateTo(newPath)
-  }
+const selectedLocale = computed({
+  get: () => locale.value,
+  set: (newLocale) => {
+    if (newLocale !== locale.value) {
+      navigateTo(switchLocalePath(newLocale))
+    }
+  },
 })
 
 useLoadingIndicator()

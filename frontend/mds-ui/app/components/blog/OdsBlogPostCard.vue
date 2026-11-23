@@ -3,7 +3,10 @@
     :title="post.title"
     clickable
   >
-    <template #image>
+    <template
+      v-if="post.image"
+      #image
+    >
       <NuxtImg
         :src="post.image"
         :alt="post.title"

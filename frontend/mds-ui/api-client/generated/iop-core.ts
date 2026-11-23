@@ -2117,7 +2117,7 @@ attributedAgents?: string[];
  */
 businessEvents?: string[];
 /**
- * Only datasets recorded in one of the specified DCAT catalogues (by id) are returned
+ * Only datasets and data services recorded in one of the specified DCAT catalogues (by id) are returned
  */
 dcatCatalogs?: string[];
 /**
@@ -2149,7 +2149,7 @@ levelProposals?: PublicationLevel[];
  */
 lifeEvents?: string[];
 /**
- * Only results with one of the specified publishers (by identifier) are returned
+ * Only results with one of the specified publishers are returned: their identifier, or for a publisher without identifier the searchKey of its publisher count
  */
 publishers?: string[];
 /**
@@ -2214,7 +2214,7 @@ attributedAgents?: string[];
  */
 businessEvents?: string[];
 /**
- * Only datasets recorded in one of the specified DCAT catalogues (by id) are counted
+ * Only datasets and data services recorded in one of the specified DCAT catalogues (by id) are counted
  */
 dcatCatalogs?: string[];
 /**
@@ -2246,7 +2246,7 @@ licenses?: string[];
  */
 lifeEvents?: string[];
 /**
- * Only results with one of the specified publishers (by identifier) are counted
+ * Only results with one of the specified publishers are counted: their identifier, or for a publisher without identifier the searchKey of its publisher count
  */
 publishers?: string[];
 /**

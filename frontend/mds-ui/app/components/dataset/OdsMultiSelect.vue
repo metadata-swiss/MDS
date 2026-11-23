@@ -1,14 +1,14 @@
 <template>
   <OdsFormField
-    :for="getUniqueId('multi-select')"
+    :for="inputId"
     :label="label"
     type="select"
     :required="required"
   >
     <div :class="selectWrapperClasses">
       <VSelect
-        :id="getUniqueId('multi-select')"
         v-model="selected"
+        :input-id="inputId"
         :multiple="multiple"
         :placeholder="placeholder"
         :class="selectClasses"
@@ -76,11 +76,10 @@
 <script setup lang="ts">
 // @ts-expect-error vue-select 4 ships no type definitions (same setup as the Swiss design system's MultiSelect)
 import VSelect from 'vue-select'
-import { ref, computed, onMounted, h } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
+import { computed, h, useId } from 'vue'
 import OdsFormField from '~/components/OdsFormField.vue'
 
-const selectId = ref('')
+const inputId = `multi-select-${useId()}`
 const selected = defineModel<unknown[]>({
   default: () => [],
 })
@@ -156,10 +155,6 @@ const selectClasses = computed(() => {
   return classes.join(' ')
 })
 
-const getUniqueId = function (text = '') {
-  return `${text}-${selectId.value}`
-}
-
 function onSearchKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter') {
     nextTick(() => {
@@ -167,10 +162,6 @@ function onSearchKeydown(event: KeyboardEvent) {
     })
   }
 }
-
-onMounted(() => {
-  selectId.value = uuidv4()
-})
 </script>
 
 <style scoped>

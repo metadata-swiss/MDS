@@ -65,7 +65,7 @@ function goTo(path: string) {
 }
 
 useHead({
-  htmlAttrs: { lang: locale.value },
+  htmlAttrs: { lang: () => locale.value },
   bodyAttrs: { class: 'body--ods-brand' },
 })
 

@@ -1,37 +1,23 @@
 <script setup lang="ts">
 import { homePageBreadcrumb } from '~/composables/breadcrumbs.js'
-import { useAsyncData, useSeoMeta } from 'nuxt/app'
+import { useSeoMeta } from 'nuxt/app'
 import OdsCmsSearchPage from '~/components/OdsCmsSearchPage.vue'
-import { queryHandbook, useGetArticleUrl } from '~/composables/handbook.js'
-import type { HandbookCollectionItem } from '@nuxt/content'
 import type { SearchResult } from 'minisearch'
 
 const { t, locale } = useI18n()
 
-const getArticleUrl = await useGetArticleUrl()
-
-const { data: pages } = await useAsyncData('handbook-search-pages', async () => {
-  return queryHandbook()
-    .select('path', 'title', 'parent', 'slug')
-    .where('path', 'LIKE', `%.${locale.value}%`)
-    .all()
+// Search sections of the published and active articles in the current language, and the address of each article
+const { data, error } = await useFetch('/api/content/search/handbook', {
+  query: { locale: locale.value },
 })
 
-const currentLanguage = new RegExp(`\\.${locale.value}(#.+)?$`)
-const { data, error } = await useAsyncData('handbook-search', async () => {
-  const sections = await queryCollectionSearchSections('handbook')
-
-  return (sections || [])
-    .filter(section => currentLanguage.test(section.id))
-})
-
-const searchResultToLink = (pages: Pick<HandbookCollectionItem, 'path' | 'slug' | 'parent'>[]) => (result: SearchResult) => {
+const searchResultToLink = (articles: { path: string, url: string }[]) => (result: SearchResult) => {
   const [id, hash] = result.id.split('#')
 
   let path
-  const page = pages.find(({ path }) => result.id.startsWith(path))
-  if (page) {
-    path = getArticleUrl(page)
+  const article = articles.find(({ path }) => result.id.startsWith(path))
+  if (article) {
+    path = article.url
   }
   else {
     path = id.substring(0, id.lastIndexOf('.'))
@@ -66,7 +52,7 @@ useSeoMeta({
   <OdsCmsSearchPage
     :search-prompt="t('message.handbook.search_prompt')"
     :breadcrumbs="breadcrumbs"
-    :data="data ?? []"
-    :search-result-to-link="searchResultToLink(pages ?? [])"
+    :data="data?.sections ?? []"
+    :search-result-to-link="searchResultToLink(data?.articles ?? [])"
   />
 </template>

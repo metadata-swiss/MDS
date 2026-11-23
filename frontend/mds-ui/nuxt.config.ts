@@ -84,6 +84,12 @@ export default defineNuxtConfig({
         },
       },
     },
+    prerender: {
+      // Nuxt Content prerenders each collection's database (sql_dump.txt) as a public file, which the static file
+      // handler serves before any middleware. Without it, the server serves the dump from a route, so that
+      // server/middleware/block-nuxt-content.ts can refuse requests from outside.
+      ignore: ['/__nuxt_content/'],
+    },
   },
   cmsAssets: {
     contentPath: resolve(import.meta.dirname, 'content/assets'),

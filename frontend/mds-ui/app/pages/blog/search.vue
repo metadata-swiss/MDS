@@ -1,24 +1,17 @@
 <script setup lang="ts">
 import { homePageBreadcrumb } from '~/composables/breadcrumbs.js'
-import { useAsyncData, useSeoMeta } from 'nuxt/app'
+import { useSeoMeta } from 'nuxt/app'
 import OdsCmsSearchPage from '~/components/OdsCmsSearchPage.vue'
 import type { SearchResult } from 'minisearch'
 
 const { t, locale } = useI18n()
 
-const currentLanguage = new RegExp(`\\.${locale.value}(#.+)?$`)
-const { data, error } = await useAsyncData('blog-search', async () => {
-  let sections = await queryCollectionSearchSections('blog')
-  sections = (sections || []).filter(section => currentLanguage.test(section.id))
-
-  const blog = await queryPublishedContent('blog')
-    .where('path', 'IN', sections.map(section => section.id))
-    .all()
-
-  return { sections, blog }
+// Search sections of the published posts in the current language, and the posts for the links and images
+const { data, error } = await useFetch('/api/content/search/blog', {
+  query: { locale: locale.value },
 })
 const sections = data.value?.sections ?? []
-const blog = data.value?.blog ?? []
+const blog = data.value?.posts ?? []
 
 const searchResultToLink = (result: SearchResult) => {
   const [id, hash] = result.id.split('#')

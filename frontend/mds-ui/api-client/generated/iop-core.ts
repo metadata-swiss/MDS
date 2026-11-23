@@ -2446,7 +2446,7 @@ export const getGetAgentsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Agents/${id}`
+  return `/api/Agents/${encodeURIComponent(String(id))}`
 }
 
 export const getAgentsById = async (id: string, options?: Parameters<typeof iopCoreFetch>[1]): Promise<AgentModel> => {
@@ -2519,7 +2519,7 @@ export const getPutAgentsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Agents/${id}`
+  return `/api/Agents/${encodeURIComponent(String(id))}`
 }
 
 export const putAgentsById = async (id: string,
@@ -2602,7 +2602,7 @@ export const getDeleteAgentsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Agents/${id}`
+  return `/api/Agents/${encodeURIComponent(String(id))}`
 }
 
 export const deleteAgentsById = async (id: string, options?: Parameters<typeof iopCoreFetch>[1]): Promise<void> => {
@@ -2670,7 +2670,7 @@ export const getGetAgentsExportByDataFormatUrl = (dataFormat: RdfExportFormat,) 
 
 
 
-  return `/api/Agents/export/${dataFormat}`
+  return `/api/Agents/export/${encodeURIComponent(String(dataFormat))}`
 }
 
 /**
@@ -2828,7 +2828,7 @@ export const getGetAgentsSubAgentOfUrl = (id: string,) => {
 
 
 
-  return `/api/Agents/${id}/sub-agent-of`
+  return `/api/Agents/${encodeURIComponent(String(id))}/sub-agent-of`
 }
 
 /**
@@ -2908,7 +2908,7 @@ export const getGetAllowActionsByResourceIdUrl = (resourceType: AllowActionResou
 
 
 
-  return `/api/AllowActions/${resourceType}/${resourceId}`
+  return `/api/AllowActions/${encodeURIComponent(String(resourceType))}/${encodeURIComponent(String(resourceId))}`
 }
 
 /**
@@ -3229,7 +3229,7 @@ export const getGetConceptsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Concepts/${id}`
+  return `/api/Concepts/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -3308,7 +3308,7 @@ export const getPutConceptsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Concepts/${id}`
+  return `/api/Concepts/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -3653,7 +3653,7 @@ export const getGetConceptsExistsByVersionUrl = (identifier: string,
 
 
 
-  return `/api/Concepts/exists/${identifier}/${version}`
+  return `/api/Concepts/exists/${encodeURIComponent(String(identifier))}/${encodeURIComponent(String(version))}`
 }
 
 /**
@@ -3737,7 +3737,7 @@ export const getGetConceptsCodelistEntriesByCodeListEntryIdUrl = (id: string,
 
 
 
-  return `/api/Concepts/${id}/codelist-entries/${codeListEntryId}`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/${encodeURIComponent(String(codeListEntryId))}`
 }
 
 /**
@@ -3821,7 +3821,7 @@ export const getPutConceptsCodelistEntriesByCodeListEntryIdUrl = (id: string,
 
 
 
-  return `/api/Concepts/${id}/codelist-entries/${codeListEntryId}`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/${encodeURIComponent(String(codeListEntryId))}`
 }
 
 /**
@@ -3912,7 +3912,7 @@ export const getDeleteConceptsCodelistEntriesByCodeListEntryIdUrl = (id: string,
 
 
 
-  return `/api/Concepts/${id}/codelist-entries/${codeListEntryId}`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/${encodeURIComponent(String(codeListEntryId))}`
 }
 
 /**
@@ -3995,7 +3995,7 @@ export const getGetConceptsCodelistEntriesByCodeUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/by-code?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/by-code`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/by-code?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/by-code`
 }
 
 /**
@@ -4086,7 +4086,7 @@ export const getGetConceptsCodelistEntriesParentsByCodeUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/parents-by-code?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/parents-by-code`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/parents-by-code?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/parents-by-code`
 }
 
 /**
@@ -4177,7 +4177,7 @@ export const getGetConceptsCodelistEntriesUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries`
 }
 
 /**
@@ -4260,7 +4260,7 @@ export const getPostConceptsCodelistEntriesUrl = (id: string,) => {
 
 
 
-  return `/api/Concepts/${id}/codelist-entries`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries`
 }
 
 /**
@@ -4349,7 +4349,7 @@ export const getDeleteConceptsCodelistEntriesUrl = (id: string,) => {
 
 
 
-  return `/api/Concepts/${id}/codelist-entries`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries`
 }
 
 /**
@@ -4431,7 +4431,7 @@ export const getGetConceptsCodelistEntriesByRootUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/by-root?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/by-root`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/by-root?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/by-root`
 }
 
 /**
@@ -4522,7 +4522,7 @@ export const getGetConceptsCodelistEntriesChildrenOfUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/children-of?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/children-of`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/children-of?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/children-of`
 }
 
 /**
@@ -4605,7 +4605,7 @@ export const getGetConceptsCodelistEntriesHasParentCodesUrl = (id: string,) => {
 
 
 
-  return `/api/Concepts/${id}/codelist-entries/has-parent-codes`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/has-parent-codes`
 }
 
 /**
@@ -4692,7 +4692,7 @@ export const getGetConceptsCodelistEntriesPageNumberFromSameParentUrl = (id: str
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/page-number-from-same-parent?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/page-number-from-same-parent`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/page-number-from-same-parent?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/page-number-from-same-parent`
 }
 
 /**
@@ -4783,7 +4783,7 @@ export const getGetConceptsCodelistEntriesAutoCompleteUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/auto-complete?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/auto-complete`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/auto-complete?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/auto-complete`
 }
 
 /**
@@ -4882,7 +4882,7 @@ export const getGetConceptsCodelistEntriesSearchUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/search?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/search`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/search?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/search`
 }
 
 export const getConceptsCodelistEntriesSearch = async (id: string,
@@ -4975,7 +4975,7 @@ export const getGetConceptsCodelistEntriesSearchExportUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/search/export?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/search/export`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/search/export?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/search/export`
 }
 
 /**
@@ -5058,7 +5058,7 @@ export const getGetConceptsPublicationLevelUrl = (id: string,) => {
 
 
 
-  return `/api/Concepts/${id}/publication-level`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -5145,7 +5145,7 @@ export const getPutConceptsPublicationLevelUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/publication-level?${stringifiedParams}` : `/api/Concepts/${id}/publication-level`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/publication-level?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -5220,7 +5220,7 @@ export const getGetConceptsRegistrationStatusUrl = (id: string,) => {
 
 
 
-  return `/api/Concepts/${id}/registration-status`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -5307,7 +5307,7 @@ export const getPutConceptsRegistrationStatusUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/registration-status?${stringifiedParams}` : `/api/Concepts/${id}/registration-status`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/registration-status?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -5390,7 +5390,7 @@ export const getGetConceptsStructureReferencesUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/structure-references?${stringifiedParams}` : `/api/Concepts/${id}/structure-references`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/structure-references?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/structure-references`
 }
 
 /**
@@ -5481,7 +5481,7 @@ export const getPutConceptsPublicationLevelProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/publication-level-proposal?${stringifiedParams}` : `/api/Concepts/${id}/publication-level-proposal`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/publication-level-proposal?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/publication-level-proposal`
 }
 
 /**
@@ -5564,7 +5564,7 @@ export const getPutConceptsRegistrationStatusProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/registration-status-proposal?${stringifiedParams}` : `/api/Concepts/${id}/registration-status-proposal`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/registration-status-proposal?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/registration-status-proposal`
 }
 
 /**
@@ -5647,7 +5647,7 @@ export const getPutConceptsLockedUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/locked?${stringifiedParams}` : `/api/Concepts/${id}/locked`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/locked?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/locked`
 }
 
 /**
@@ -5722,7 +5722,7 @@ export const getGetConceptsVersionsUrl = (id: string,) => {
 
 
 
-  return `/api/Concepts/${id}/versions`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/versions`
 }
 
 /**
@@ -5801,7 +5801,7 @@ export const getPostConceptsVersionsUrl = (id: string,) => {
 
 
 
-  return `/api/Concepts/${id}/versions`
+  return `/api/Concepts/${encodeURIComponent(String(id))}/versions`
 }
 
 /**
@@ -5890,7 +5890,7 @@ export const getGetConceptsIdentifierByIdentifierUrl = (identifier: string,) => 
 
 
 
-  return `/api/Concepts/identifier/${identifier}`
+  return `/api/Concepts/identifier/${encodeURIComponent(String(identifier))}`
 }
 
 /**
@@ -5977,7 +5977,7 @@ export const getPostConceptsCodelistEntriesImportUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/import?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/import`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/import?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/import`
 }
 
 /**
@@ -6065,7 +6065,7 @@ export const getGetConceptsCodelistEntriesExportUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/codelist-entries/export?${stringifiedParams}` : `/api/Concepts/${id}/codelist-entries/export`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/export?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/codelist-entries/export`
 }
 
 /**
@@ -6156,7 +6156,7 @@ export const getGetConceptsExportUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Concepts/${id}/export?${stringifiedParams}` : `/api/Concepts/${id}/export`
+  return stringifiedParams.length > 0 ? `/api/Concepts/${encodeURIComponent(String(id))}/export?${stringifiedParams}` : `/api/Concepts/${encodeURIComponent(String(id))}/export`
 }
 
 /**
@@ -6239,7 +6239,7 @@ export const getGetDataServicesByIdUrl = (id: string,) => {
 
 
 
-  return `/api/DataServices/${id}`
+  return `/api/DataServices/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -6318,7 +6318,7 @@ export const getPutDataServicesByIdUrl = (id: string,) => {
 
 
 
-  return `/api/DataServices/${id}`
+  return `/api/DataServices/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -6407,7 +6407,7 @@ export const getDeleteDataServicesByIdUrl = (id: string,) => {
 
 
 
-  return `/api/DataServices/${id}`
+  return `/api/DataServices/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -6481,7 +6481,7 @@ export const getGetDataServicesByIdentifierUrl = (identifier: string,) => {
 
 
 
-  return `/api/DataServices/by-identifier/${identifier}`
+  return `/api/DataServices/by-identifier/${encodeURIComponent(String(identifier))}`
 }
 
 /**
@@ -6742,7 +6742,7 @@ export const getGetDataServicesNextVersionsUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/DataServices/${id}/next-versions?${stringifiedParams}` : `/api/DataServices/${id}/next-versions`
+  return stringifiedParams.length > 0 ? `/api/DataServices/${encodeURIComponent(String(id))}/next-versions?${stringifiedParams}` : `/api/DataServices/${encodeURIComponent(String(id))}/next-versions`
 }
 
 /**
@@ -6825,7 +6825,7 @@ export const getGetDataServicesPublicationLevelUrl = (id: string,) => {
 
 
 
-  return `/api/DataServices/${id}/publication-level`
+  return `/api/DataServices/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -6912,7 +6912,7 @@ export const getPutDataServicesPublicationLevelUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/DataServices/${id}/publication-level?${stringifiedParams}` : `/api/DataServices/${id}/publication-level`
+  return stringifiedParams.length > 0 ? `/api/DataServices/${encodeURIComponent(String(id))}/publication-level?${stringifiedParams}` : `/api/DataServices/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -6987,7 +6987,7 @@ export const getGetDataServicesRegistrationStatusUrl = (id: string,) => {
 
 
 
-  return `/api/DataServices/${id}/registration-status`
+  return `/api/DataServices/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -7074,7 +7074,7 @@ export const getPutDataServicesRegistrationStatusUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/DataServices/${id}/registration-status?${stringifiedParams}` : `/api/DataServices/${id}/registration-status`
+  return stringifiedParams.length > 0 ? `/api/DataServices/${encodeURIComponent(String(id))}/registration-status?${stringifiedParams}` : `/api/DataServices/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -7157,7 +7157,7 @@ export const getPutDataServicesPublicationLevelProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/DataServices/${id}/publication-level-proposal?${stringifiedParams}` : `/api/DataServices/${id}/publication-level-proposal`
+  return stringifiedParams.length > 0 ? `/api/DataServices/${encodeURIComponent(String(id))}/publication-level-proposal?${stringifiedParams}` : `/api/DataServices/${encodeURIComponent(String(id))}/publication-level-proposal`
 }
 
 /**
@@ -7240,7 +7240,7 @@ export const getPutDataServicesRegistrationStatusProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/DataServices/${id}/registration-status-proposal?${stringifiedParams}` : `/api/DataServices/${id}/registration-status-proposal`
+  return stringifiedParams.length > 0 ? `/api/DataServices/${encodeURIComponent(String(id))}/registration-status-proposal?${stringifiedParams}` : `/api/DataServices/${encodeURIComponent(String(id))}/registration-status-proposal`
 }
 
 /**
@@ -7491,7 +7491,7 @@ export const getDeleteDatasetQualityInformationByDatasetIdUrl = (datasetId: stri
 
 
 
-  return `/api/DatasetQualityInformation/${datasetId}`
+  return `/api/DatasetQualityInformation/${encodeURIComponent(String(datasetId))}`
 }
 
 /**
@@ -7565,7 +7565,7 @@ export const getGetDatasetQualityInformationByDatasetIdUrl = (datasetId: string,
 
 
 
-  return `/api/DatasetQualityInformation/${datasetId}`
+  return `/api/DatasetQualityInformation/${encodeURIComponent(String(datasetId))}`
 }
 
 /**
@@ -7730,7 +7730,7 @@ export const getGetDatasetsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}`
+  return `/api/Datasets/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -7809,7 +7809,7 @@ export const getPutDatasetsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}`
+  return `/api/Datasets/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -7898,7 +7898,7 @@ export const getDeleteDatasetsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}`
+  return `/api/Datasets/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -7972,7 +7972,7 @@ export const getGetDatasetsByIdentifierUrl = (identifier: string,) => {
 
 
 
-  return `/api/Datasets/by-identifier/${identifier}`
+  return `/api/Datasets/by-identifier/${encodeURIComponent(String(identifier))}`
 }
 
 /**
@@ -8059,7 +8059,7 @@ export const getGetDatasetsIsServedByUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${id}/is-served-by?${stringifiedParams}` : `/api/Datasets/${id}/is-served-by`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(id))}/is-served-by?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(id))}/is-served-by`
 }
 
 /**
@@ -8151,7 +8151,7 @@ export const getGetDatasetsDistributionsAccessServicesUrl = (datasetId: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${datasetId}/distributions/${distributionId}/access-services?${stringifiedParams}` : `/api/Datasets/${datasetId}/distributions/${distributionId}/access-services`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(datasetId))}/distributions/${encodeURIComponent(String(distributionId))}/access-services?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(datasetId))}/distributions/${encodeURIComponent(String(distributionId))}/access-services`
 }
 
 /**
@@ -8412,7 +8412,7 @@ export const getGetDatasetsPublicationLevelUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}/publication-level`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -8499,7 +8499,7 @@ export const getPutDatasetsPublicationLevelUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${id}/publication-level?${stringifiedParams}` : `/api/Datasets/${id}/publication-level`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(id))}/publication-level?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -8574,7 +8574,7 @@ export const getGetDatasetsRegistrationStatusUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}/registration-status`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -8661,7 +8661,7 @@ export const getPutDatasetsRegistrationStatusUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${id}/registration-status?${stringifiedParams}` : `/api/Datasets/${id}/registration-status`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(id))}/registration-status?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -8744,7 +8744,7 @@ export const getGetDatasetsNextVersionsUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${id}/next-versions?${stringifiedParams}` : `/api/Datasets/${id}/next-versions`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(id))}/next-versions?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(id))}/next-versions`
 }
 
 /**
@@ -8827,7 +8827,7 @@ export const getPostDatasetsModelImportUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}/model/import`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/model/import`
 }
 
 /**
@@ -8907,7 +8907,7 @@ export const getGetDatasetsModelExportByFormatUrl = (id: string,
 
 
 
-  return `/api/Datasets/${id}/model/export/${format}`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/model/export/${encodeURIComponent(String(format))}`
 }
 
 /**
@@ -8990,7 +8990,7 @@ export const getGetDatasetsModelExistsUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}/model/exists`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/model/exists`
 }
 
 /**
@@ -9069,7 +9069,7 @@ export const getDeleteDatasetsModelDeleteUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}/model/delete`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/model/delete`
 }
 
 /**
@@ -9143,7 +9143,7 @@ export const getGetDatasetsModelGraphUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}/model/graph`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/model/graph`
 }
 
 /**
@@ -9222,7 +9222,7 @@ export const getPutDatasetsModelPositionUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}/model/position`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/model/position`
 }
 
 /**
@@ -9311,7 +9311,7 @@ export const getPutDatasetsModelClassUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}/model/class`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/model/class`
 }
 
 /**
@@ -9400,7 +9400,7 @@ export const getPostDatasetsModelClassUrl = (id: string,) => {
 
 
 
-  return `/api/Datasets/${id}/model/class`
+  return `/api/Datasets/${encodeURIComponent(String(id))}/model/class`
 }
 
 /**
@@ -9497,7 +9497,7 @@ export const getDeleteDatasetsModelPropertyUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${id}/model/property?${stringifiedParams}` : `/api/Datasets/${id}/model/property`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(id))}/model/property?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(id))}/model/property`
 }
 
 /**
@@ -9580,7 +9580,7 @@ export const getPutDatasetsModelPropertyUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${id}/model/property?${stringifiedParams}` : `/api/Datasets/${id}/model/property`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(id))}/model/property?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(id))}/model/property`
 }
 
 /**
@@ -9680,7 +9680,7 @@ export const getPostDatasetsModelPropertyUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${id}/model/property?${stringifiedParams}` : `/api/Datasets/${id}/model/property`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(id))}/model/property?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(id))}/model/property`
 }
 
 /**
@@ -9780,7 +9780,7 @@ export const getPutDatasetsPublicationLevelProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${id}/publication-level-proposal?${stringifiedParams}` : `/api/Datasets/${id}/publication-level-proposal`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(id))}/publication-level-proposal?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(id))}/publication-level-proposal`
 }
 
 /**
@@ -9863,7 +9863,7 @@ export const getPutDatasetsRegistrationStatusProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Datasets/${id}/registration-status-proposal?${stringifiedParams}` : `/api/Datasets/${id}/registration-status-proposal`
+  return stringifiedParams.length > 0 ? `/api/Datasets/${encodeURIComponent(String(id))}/registration-status-proposal?${stringifiedParams}` : `/api/Datasets/${encodeURIComponent(String(id))}/registration-status-proposal`
 }
 
 /**
@@ -9938,7 +9938,7 @@ export const getGetDcatCatalogsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/DcatCatalogs/${id}`
+  return `/api/DcatCatalogs/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -10017,7 +10017,7 @@ export const getPutDcatCatalogsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/DcatCatalogs/${id}`
+  return `/api/DcatCatalogs/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -10106,7 +10106,7 @@ export const getDeleteDcatCatalogsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/DcatCatalogs/${id}`
+  return `/api/DcatCatalogs/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -10188,7 +10188,7 @@ export const getGetDcatCatalogsThemesUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/DcatCatalogs/${id}/themes?${stringifiedParams}` : `/api/DcatCatalogs/${id}/themes`
+  return stringifiedParams.length > 0 ? `/api/DcatCatalogs/${encodeURIComponent(String(id))}/themes?${stringifiedParams}` : `/api/DcatCatalogs/${encodeURIComponent(String(id))}/themes`
 }
 
 /**
@@ -10539,7 +10539,7 @@ export const getGetDcatCatalogsRecordsUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/DcatCatalogs/${id}/records?${stringifiedParams}` : `/api/DcatCatalogs/${id}/records`
+  return stringifiedParams.length > 0 ? `/api/DcatCatalogs/${encodeURIComponent(String(id))}/records?${stringifiedParams}` : `/api/DcatCatalogs/${encodeURIComponent(String(id))}/records`
 }
 
 /**
@@ -10622,7 +10622,7 @@ export const getPostDcatCatalogsRecordsUrl = (id: string,) => {
 
 
 
-  return `/api/DcatCatalogs/${id}/records`
+  return `/api/DcatCatalogs/${encodeURIComponent(String(id))}/records`
 }
 
 /**
@@ -10719,7 +10719,7 @@ export const getGetDcatCatalogsRecordsFromResourceByResourceIdUrl = (resourceId:
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/DcatCatalogs/records/from-resource/${resourceId}?${stringifiedParams}` : `/api/DcatCatalogs/records/from-resource/${resourceId}`
+  return stringifiedParams.length > 0 ? `/api/DcatCatalogs/records/from-resource/${encodeURIComponent(String(resourceId))}?${stringifiedParams}` : `/api/DcatCatalogs/records/from-resource/${encodeURIComponent(String(resourceId))}`
 }
 
 /**
@@ -10803,7 +10803,7 @@ export const getGetDcatCatalogsRecordsByRecordIdUrl = (id: string,
 
 
 
-  return `/api/DcatCatalogs/${id}/records/${recordId}`
+  return `/api/DcatCatalogs/${encodeURIComponent(String(id))}/records/${encodeURIComponent(String(recordId))}`
 }
 
 /**
@@ -10887,7 +10887,7 @@ export const getPutDcatCatalogsRecordsByRecordIdUrl = (id: string,
 
 
 
-  return `/api/DcatCatalogs/${id}/records/${recordId}`
+  return `/api/DcatCatalogs/${encodeURIComponent(String(id))}/records/${encodeURIComponent(String(recordId))}`
 }
 
 /**
@@ -10978,7 +10978,7 @@ export const getDeleteDcatCatalogsRecordsByRecordIdUrl = (id: string,
 
 
 
-  return `/api/DcatCatalogs/${id}/records/${recordId}`
+  return `/api/DcatCatalogs/${encodeURIComponent(String(id))}/records/${encodeURIComponent(String(recordId))}`
 }
 
 /**
@@ -11054,7 +11054,7 @@ export const getGetDcatCatalogsExportByDataFormatUrl = (id: string,
 
 
 
-  return `/api/DcatCatalogs/${id}/export/${dataFormat}`
+  return `/api/DcatCatalogs/${encodeURIComponent(String(id))}/export/${encodeURIComponent(String(dataFormat))}`
 }
 
 /**
@@ -11137,7 +11137,7 @@ export const getGetFilterConfigurationsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/FilterConfigurations/${id}`
+  return `/api/FilterConfigurations/${encodeURIComponent(String(id))}`
 }
 
 export const getFilterConfigurationsById = async (id: string, options?: Parameters<typeof iopCoreFetch>[1]): Promise<FilterConfigurationModel> => {
@@ -11210,7 +11210,7 @@ export const getPostFilterConfigurationsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/FilterConfigurations/${id}`
+  return `/api/FilterConfigurations/${encodeURIComponent(String(id))}`
 }
 
 export const postFilterConfigurationsById = async (id: string,
@@ -11283,7 +11283,7 @@ export const getDeleteFilterConfigurationsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/FilterConfigurations/${id}`
+  return `/api/FilterConfigurations/${encodeURIComponent(String(id))}`
 }
 
 export const deleteFilterConfigurationsById = async (id: string, options?: Parameters<typeof iopCoreFetch>[1]): Promise<void> => {
@@ -11351,7 +11351,7 @@ export const getGetMappingTablesByIdUrl = (id: string,) => {
 
 
 
-  return `/api/MappingTables/${id}`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}`
 }
 
 export const getMappingTablesById = async (id: string, options?: Parameters<typeof iopCoreFetch>[1]): Promise<MappingTableModel> => {
@@ -11424,7 +11424,7 @@ export const getPutMappingTablesByIdUrl = (id: string,) => {
 
 
 
-  return `/api/MappingTables/${id}`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -11769,7 +11769,7 @@ export const getGetMappingTablesExistsByVersionUrl = (identifier: string,
 
 
 
-  return `/api/MappingTables/exists/${identifier}/${version}`
+  return `/api/MappingTables/exists/${encodeURIComponent(String(identifier))}/${encodeURIComponent(String(version))}`
 }
 
 /**
@@ -11853,7 +11853,7 @@ export const getGetMappingTablesRelationsByRelationIdUrl = (id: string,
 
 
 
-  return `/api/MappingTables/${id}/relations/${relationId}`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}/relations/${encodeURIComponent(String(relationId))}`
 }
 
 /**
@@ -11937,7 +11937,7 @@ export const getPutMappingTablesRelationsByRelationIdUrl = (id: string,
 
 
 
-  return `/api/MappingTables/${id}/relations/${relationId}`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}/relations/${encodeURIComponent(String(relationId))}`
 }
 
 /**
@@ -12028,7 +12028,7 @@ export const getDeleteMappingTablesRelationsByRelationIdUrl = (id: string,
 
 
 
-  return `/api/MappingTables/${id}/relations/${relationId}`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}/relations/${encodeURIComponent(String(relationId))}`
 }
 
 /**
@@ -12111,7 +12111,7 @@ export const getGetMappingTablesRelationsUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/MappingTables/${id}/relations?${stringifiedParams}` : `/api/MappingTables/${id}/relations`
+  return stringifiedParams.length > 0 ? `/api/MappingTables/${encodeURIComponent(String(id))}/relations?${stringifiedParams}` : `/api/MappingTables/${encodeURIComponent(String(id))}/relations`
 }
 
 /**
@@ -12194,7 +12194,7 @@ export const getPostMappingTablesRelationsUrl = (id: string,) => {
 
 
 
-  return `/api/MappingTables/${id}/relations`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}/relations`
 }
 
 /**
@@ -12283,7 +12283,7 @@ export const getDeleteMappingTablesRelationsUrl = (id: string,) => {
 
 
 
-  return `/api/MappingTables/${id}/relations`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}/relations`
 }
 
 /**
@@ -12357,7 +12357,7 @@ export const getGetMappingTablesPublicationLevelUrl = (id: string,) => {
 
 
 
-  return `/api/MappingTables/${id}/publication-level`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -12444,7 +12444,7 @@ export const getPutMappingTablesPublicationLevelUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/MappingTables/${id}/publication-level?${stringifiedParams}` : `/api/MappingTables/${id}/publication-level`
+  return stringifiedParams.length > 0 ? `/api/MappingTables/${encodeURIComponent(String(id))}/publication-level?${stringifiedParams}` : `/api/MappingTables/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -12519,7 +12519,7 @@ export const getGetMappingTablesRegistrationStatusUrl = (id: string,) => {
 
 
 
-  return `/api/MappingTables/${id}/registration-status`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -12606,7 +12606,7 @@ export const getPutMappingTablesRegistrationStatusUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/MappingTables/${id}/registration-status?${stringifiedParams}` : `/api/MappingTables/${id}/registration-status`
+  return stringifiedParams.length > 0 ? `/api/MappingTables/${encodeURIComponent(String(id))}/registration-status?${stringifiedParams}` : `/api/MappingTables/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -12681,7 +12681,7 @@ export const getPostMappingTablesVersionsUrl = (id: string,) => {
 
 
 
-  return `/api/MappingTables/${id}/versions`
+  return `/api/MappingTables/${encodeURIComponent(String(id))}/versions`
 }
 
 /**
@@ -12778,7 +12778,7 @@ export const getPutMappingTablesPublicationLevelProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/MappingTables/${id}/publication-level-proposal?${stringifiedParams}` : `/api/MappingTables/${id}/publication-level-proposal`
+  return stringifiedParams.length > 0 ? `/api/MappingTables/${encodeURIComponent(String(id))}/publication-level-proposal?${stringifiedParams}` : `/api/MappingTables/${encodeURIComponent(String(id))}/publication-level-proposal`
 }
 
 /**
@@ -12861,7 +12861,7 @@ export const getPutMappingTablesRegistrationStatusProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/MappingTables/${id}/registration-status-proposal?${stringifiedParams}` : `/api/MappingTables/${id}/registration-status-proposal`
+  return stringifiedParams.length > 0 ? `/api/MappingTables/${encodeURIComponent(String(id))}/registration-status-proposal?${stringifiedParams}` : `/api/MappingTables/${encodeURIComponent(String(id))}/registration-status-proposal`
 }
 
 /**
@@ -12944,7 +12944,7 @@ export const getPostMappingTablesRelationsImportUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/MappingTables/${id}/relations/import?${stringifiedParams}` : `/api/MappingTables/${id}/relations/import`
+  return stringifiedParams.length > 0 ? `/api/MappingTables/${encodeURIComponent(String(id))}/relations/import?${stringifiedParams}` : `/api/MappingTables/${encodeURIComponent(String(id))}/relations/import`
 }
 
 /**
@@ -13032,7 +13032,7 @@ export const getGetMappingTablesRelationsExportUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/MappingTables/${id}/relations/export?${stringifiedParams}` : `/api/MappingTables/${id}/relations/export`
+  return stringifiedParams.length > 0 ? `/api/MappingTables/${encodeURIComponent(String(id))}/relations/export?${stringifiedParams}` : `/api/MappingTables/${encodeURIComponent(String(id))}/relations/export`
 }
 
 /**
@@ -13115,7 +13115,7 @@ export const getGetMediaByUrlUrl = (url: string,) => {
 
 
 
-  return `/api/Media/${url}`
+  return `/api/Media/${encodeURIComponent(String(url))}`
 }
 
 export const getMediaByUrl = async (url: string, options?: Parameters<typeof iopCoreFetch>[1]): Promise<Blob> => {
@@ -13188,7 +13188,7 @@ export const getDeleteMediaByUrlUrl = (url: string,) => {
 
 
 
-  return `/api/Media/${url}`
+  return `/api/Media/${encodeURIComponent(String(url))}`
 }
 
 export const deleteMediaByUrl = async (url: string, options?: Parameters<typeof iopCoreFetch>[1]): Promise<void> => {
@@ -13409,7 +13409,7 @@ export const getGetPersonsSearchByQueryUrl = (query: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/Persons/search/${query}?${stringifiedParams}` : `/api/Persons/search/${query}`
+  return stringifiedParams.length > 0 ? `/api/Persons/search/${encodeURIComponent(String(query))}?${stringifiedParams}` : `/api/Persons/search/${encodeURIComponent(String(query))}`
 }
 
 /**
@@ -13571,7 +13571,7 @@ export const getGetPersonsByEmailUrl = (email: string,) => {
 
 
 
-  return `/api/Persons/${email}`
+  return `/api/Persons/${encodeURIComponent(String(email))}`
 }
 
 /**
@@ -13738,7 +13738,7 @@ export const getGetPublicServicesByIdUrl = (id: string,) => {
 
 
 
-  return `/api/PublicServices/${id}`
+  return `/api/PublicServices/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -13817,7 +13817,7 @@ export const getPutPublicServicesByIdUrl = (id: string,) => {
 
 
 
-  return `/api/PublicServices/${id}`
+  return `/api/PublicServices/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -13906,7 +13906,7 @@ export const getDeletePublicServicesByIdUrl = (id: string,) => {
 
 
 
-  return `/api/PublicServices/${id}`
+  return `/api/PublicServices/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -13980,7 +13980,7 @@ export const getGetPublicServicesByIdentifierUrl = (identifier: string,) => {
 
 
 
-  return `/api/PublicServices/by-identifier/${identifier}`
+  return `/api/PublicServices/by-identifier/${encodeURIComponent(String(identifier))}`
 }
 
 /**
@@ -14233,7 +14233,7 @@ export const getGetPublicServicesIsDescribedAtUrl = (id: string,) => {
 
 
 
-  return `/api/PublicServices/${id}/is-described-at`
+  return `/api/PublicServices/${encodeURIComponent(String(id))}/is-described-at`
 }
 
 /**
@@ -14312,7 +14312,7 @@ export const getGetPublicServicesRelationsUrl = (id: string,) => {
 
 
 
-  return `/api/PublicServices/${id}/relations`
+  return `/api/PublicServices/${encodeURIComponent(String(id))}/relations`
 }
 
 /**
@@ -14391,7 +14391,7 @@ export const getGetPublicServicesRequiresUrl = (id: string,) => {
 
 
 
-  return `/api/PublicServices/${id}/requires`
+  return `/api/PublicServices/${encodeURIComponent(String(id))}/requires`
 }
 
 /**
@@ -14470,7 +14470,7 @@ export const getGetPublicServicesChannelsByIdentifierUrl = (identifier: string,)
 
 
 
-  return `/api/PublicServices/channels/by-identifier/${identifier}`
+  return `/api/PublicServices/channels/by-identifier/${encodeURIComponent(String(identifier))}`
 }
 
 /**
@@ -14549,7 +14549,7 @@ export const getGetPublicServicesPublicationLevelUrl = (id: string,) => {
 
 
 
-  return `/api/PublicServices/${id}/publication-level`
+  return `/api/PublicServices/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -14636,7 +14636,7 @@ export const getPutPublicServicesPublicationLevelUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/PublicServices/${id}/publication-level?${stringifiedParams}` : `/api/PublicServices/${id}/publication-level`
+  return stringifiedParams.length > 0 ? `/api/PublicServices/${encodeURIComponent(String(id))}/publication-level?${stringifiedParams}` : `/api/PublicServices/${encodeURIComponent(String(id))}/publication-level`
 }
 
 /**
@@ -14711,7 +14711,7 @@ export const getGetPublicServicesRegistrationStatusUrl = (id: string,) => {
 
 
 
-  return `/api/PublicServices/${id}/registration-status`
+  return `/api/PublicServices/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -14798,7 +14798,7 @@ export const getPutPublicServicesRegistrationStatusUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/PublicServices/${id}/registration-status?${stringifiedParams}` : `/api/PublicServices/${id}/registration-status`
+  return stringifiedParams.length > 0 ? `/api/PublicServices/${encodeURIComponent(String(id))}/registration-status?${stringifiedParams}` : `/api/PublicServices/${encodeURIComponent(String(id))}/registration-status`
 }
 
 /**
@@ -14881,7 +14881,7 @@ export const getPutPublicServicesPublicationLevelProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/PublicServices/${id}/publication-level-proposal?${stringifiedParams}` : `/api/PublicServices/${id}/publication-level-proposal`
+  return stringifiedParams.length > 0 ? `/api/PublicServices/${encodeURIComponent(String(id))}/publication-level-proposal?${stringifiedParams}` : `/api/PublicServices/${encodeURIComponent(String(id))}/publication-level-proposal`
 }
 
 /**
@@ -14964,7 +14964,7 @@ export const getPutPublicServicesRegistrationStatusProposalUrl = (id: string,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/PublicServices/${id}/registration-status-proposal?${stringifiedParams}` : `/api/PublicServices/${id}/registration-status-proposal`
+  return stringifiedParams.length > 0 ? `/api/PublicServices/${encodeURIComponent(String(id))}/registration-status-proposal?${stringifiedParams}` : `/api/PublicServices/${encodeURIComponent(String(id))}/registration-status-proposal`
 }
 
 /**
@@ -15797,7 +15797,7 @@ export const getGetVocabulariesConfigurationsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Vocabularies/configurations/${id}`
+  return `/api/Vocabularies/configurations/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -15876,7 +15876,7 @@ export const getPutVocabulariesConfigurationsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Vocabularies/configurations/${id}`
+  return `/api/Vocabularies/configurations/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -15965,7 +15965,7 @@ export const getDeleteVocabulariesConfigurationsByIdUrl = (id: string,) => {
 
 
 
-  return `/api/Vocabularies/configurations/${id}`
+  return `/api/Vocabularies/configurations/${encodeURIComponent(String(id))}`
 }
 
 /**
@@ -16039,7 +16039,7 @@ export const getGetVocabulariesByIdentifierUrl = (identifier: string,) => {
 
 
 
-  return `/api/Vocabularies/${identifier}`
+  return `/api/Vocabularies/${encodeURIComponent(String(identifier))}`
 }
 
 /**

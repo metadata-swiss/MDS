@@ -23,6 +23,7 @@ export default defineConfig({
       mode: 'single',
       client: 'vue-query',
       httpClient: 'fetch',
+      urlEncodeParameters: true,
       override: {
         operationName,
         // Swashbuckle declares text/plain, application/json and text/json for every response; generate one type, not three.

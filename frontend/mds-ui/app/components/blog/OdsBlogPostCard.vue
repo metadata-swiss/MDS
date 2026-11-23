@@ -3,7 +3,10 @@
     :title="post.title"
     clickable
   >
-    <template #image>
+    <template
+      v-if="post.image"
+      #image
+    >
       <NuxtImg
         :src="post.image"
         :alt="post.title"
@@ -39,12 +42,12 @@
 <script setup lang="ts">
 import OdsCard from '~/components/content/OdsCard.vue'
 import SvgIcon from '~/components/SvgIcon.vue'
-import type { BlogCollectionItem } from '@nuxt/content'
+import type { BlogPostSummary } from '~/model/blog'
 
 const { t, locale } = useI18n()
 
 const { post: collectionItem } = defineProps<{
-  post: BlogCollectionItem
+  post: BlogPostSummary
 }>()
 
 const post = computed(() => {

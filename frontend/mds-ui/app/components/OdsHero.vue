@@ -98,6 +98,24 @@ const computedClasses = computed(() => {
 <style lang="scss" scoped>
 @use '@/assets/ods/ods_breakpoints.scss' as media;
 
+.hero--centered {
+  background-color: white;
+
+  @include media.respond-to-lg {
+    padding-block: 8.5rem;
+  }
+
+  .container {
+    display: block;
+  }
+
+  .hero__content {
+    max-width: 56rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+}
+
 .hero--floating {
   position: relative;
   z-index: 1;

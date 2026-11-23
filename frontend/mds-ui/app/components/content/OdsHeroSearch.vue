@@ -31,6 +31,12 @@ function onEnter() {
 
 <style scoped>
 form {
+  max-width: 48rem;
+  margin-inline: auto;
   padding-top: 30px;
+}
+
+form :deep(input) {
+  border-color: var(--color-primary-600);
 }
 </style>

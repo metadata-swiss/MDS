@@ -87,7 +87,7 @@ const breadcrumbs = [
   },
 ]
 useSeoMeta({
-  title: `${t('message.header.navigation.showcases')} | opendata.swiss`,
+  title: `${t('message.header.navigation.showcases')} | metadata.swiss`,
 })
 
 function resetSearch() {

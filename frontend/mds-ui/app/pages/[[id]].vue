@@ -16,15 +16,19 @@ const { data: page, error } = await useFetch<PagesCollectionItem>(`/api/content/
 })
 ensureFound(page.value, error.value)
 
+const isHome = slug === 'index'
+const displayedPage = computed(() => isHome && page.value ? { ...page.value, heading: 'metadata.swiss', heroImage: undefined } : page.value)
+
 useSeoMeta({
-  title: `${page.value?.title} | opendata.swiss`,
+  title: `${page.value?.title} | metadata.swiss`,
 })
 </script>
 
 <template>
   <OdsPage
-    v-if="page"
-    :page="page"
+    v-if="displayedPage"
+    :page="displayedPage"
+    :centered-hero="isHome"
   >
     <template #header>
       <OdsBreadcrumbs :breadcrumbs="breadcrumbs" />

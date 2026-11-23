@@ -164,7 +164,7 @@ const breadcrumbs = computed(() => [
 ])
 
 useSeoMeta({
-  title: computed(() => `${organization.value ? getOrganizationLabel(organization.value) : organizationId.value} | ${t('message.header.navigation.organizations')} | opendata.swiss`),
+  title: computed(() => `${organization.value ? getOrganizationLabel(organization.value) : organizationId.value} | ${t('message.header.navigation.organizations')} | metadata.swiss`),
 })
 </script>
 

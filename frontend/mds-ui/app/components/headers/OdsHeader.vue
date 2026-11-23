@@ -4,8 +4,6 @@ import OdsDropdownMenu from '@/components/OdsDropdownMenu.vue'
 import { useI18n } from '#imports'
 
 import type { OdsNavTabItem } from '~/model/ods-nav-tab-item'
-import NamedLogo from '~/components/NamedLogo.vue'
-import LogoSmall from '@/components/LogoSmall.vue'
 import BurgerButton from '@/components/BurgerButton.vue'
 import OdsNavigationPanel from '@/components/OdsNavigationPanel.vue'
 import { NuxtLinkLocale } from '#components'
@@ -59,39 +57,16 @@ function isChildPageOfSubMenu(item: OdsNavTabItem) {
     class="top-header"
   >
     <div class="container container--flex">
-      <div
-        class="logo"
+      <NuxtLinkLocale
+        class="brand"
         to="/"
-        aria-label="Home"
       >
-        <NuxtLinkLocale
-          class="logo"
-          to="/"
-          aria-label="Home"
-        >
-          <LogoSmall style="margin-right:4px;" />
-        </NuxtLinkLocale>
-        <NuxtLinkLocale
-          class="logo"
-          to="/"
-          aria-label="Home"
-        >
-          <NamedLogo />
-        </NuxtLinkLocale>
-        <div
-          class="logo__separator"
-          role="separator"
+        <span class="brand__name"><span class="brand__name--accent">metadata</span>.swiss</span>
+        <span
+          class="brand__ring"
           aria-hidden="true"
         />
-        <div class="logo-title__container">
-          <div class="logo__accronym">
-            ODS Portal
-          </div>
-          <div class="logo__title">
-            <div>opendata.swiss<br>Portal</div>
-          </div>
-        </div>
-      </div>
+      </NuxtLinkLocale>
       <div class="top-header__right">
         <BurgerButton
           v-model="menuOpen"
@@ -156,6 +131,48 @@ function isChildPageOfSubMenu(item: OdsNavTabItem) {
 
 <style lang="scss" scoped>
 @use '@/assets/ods/ods_breakpoints.scss' as mdeia;
+
+#top-header-id {
+  padding-block: 1.75rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--color-secondary-900);
+}
+
+.brand__name {
+  font-family: Font-Bold, Hind, sans-serif;
+  font-size: 1.75rem;
+  line-height: 1;
+
+  @media (min-width: 1024px) {
+    font-size: 2.75rem;
+  }
+}
+
+.brand__name--accent {
+  color: var(--color-primary-600);
+}
+
+.brand__ring {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 4px solid var(--color-primary-600);
+  border-radius: 50%;
+
+  @media (min-width: 1024px) {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-width: 5px;
+  }
+}
+
+#main-navigation.main-navigation--desktop {
+  height: 3.25rem;
+}
 
 // keep
 #desktop-navigation-id{

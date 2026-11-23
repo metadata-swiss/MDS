@@ -5,12 +5,13 @@ import type { PagesCollectionItem } from '@nuxt/content'
 
 type Page = Pick<PagesCollectionItem, 'heading' | 'title' | 'subHeading' | 'heroImage' | 'fullWidth'> & Partial<Pick<PagesCollectionItem, 'body'>>
 
-const { page, hero: heroProp } = defineProps<{
+const { page, hero: heroProp, centeredHero = false } = defineProps<{
   page?: Page
   hero?: {
     image?: string
     title: string
   }
+  centeredHero?: boolean
 }>()
 
 const hero = computed(() => {
@@ -42,6 +43,7 @@ const hero = computed(() => {
       v-if="hero"
       :type="hero.image ? 'main-image' : 'default'"
       class="hero--title-only"
+      :class="{ 'hero--centered': centeredHero }"
     >
       <template #title>
         {{ hero.title }}

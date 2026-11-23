@@ -14,7 +14,7 @@ const { data: post, error } = await useFetch(`/api/content/blog/post/${encodeURI
 ensureFound(post.value, error.value)
 
 useSeoMeta({
-  title: `${post.value?.title} | ${t('message.header.navigation.blog')} | opendata.swiss`,
+  title: `${post.value?.title} | ${t('message.header.navigation.blog')} | metadata.swiss`,
 })
 
 const breadcrumbs = [

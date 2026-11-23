@@ -178,7 +178,7 @@ const props = defineProps<Props>()
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   //padding: 24px;
-  // background-color: var(--color-secondary-10, rgba(0, 150, 136, 0.03));
+  // background-color: var(--color-secondary-10, rgba(160, 43, 147, 0.03));
  // border: 1px solid var(--color-secondary-100, #dfe4e9);
  // border-radius: 12px;
  // box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
@@ -238,7 +238,7 @@ const props = defineProps<Props>()
 .col-icon {
   width: 18px;
   height: 18px;
-  color: var(--color-primary-500, #009688);
+  color: var(--color-primary-500, #a02b93);
 }
 
 .col-title {
@@ -298,15 +298,15 @@ const props = defineProps<Props>()
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--color-primary-500, #009688);
+  color: var(--color-primary-500, #a02b93);
   font-weight: 500;
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: border-bottom-color 0.2s ease, color 0.2s ease;
 
   &:hover {
-    color: var(--color-primary-800, #004a43);
-    border-bottom-color: var(--color-primary-800, #004a43);
+    color: var(--color-primary-800, #5c1955);
+    border-bottom-color: var(--color-primary-800, #5c1955);
 
     .external-icon {
       transform: translate(1px, -1px);

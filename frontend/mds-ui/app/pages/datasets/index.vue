@@ -209,7 +209,7 @@ onMounted(() => {
 })
 
 useSeoMeta({
-  title: `${t('message.header.navigation.datasets')} | opendata.swiss`,
+  title: `${t('message.header.navigation.datasets')} | metadata.swiss`,
 })
 
 await suspense()

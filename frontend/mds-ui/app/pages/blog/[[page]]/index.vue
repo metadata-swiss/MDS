@@ -21,7 +21,7 @@ const posts = computed(() => data.value?.posts ?? [])
 const pageCount = computed(() => data.value?.pageCount ?? 0)
 
 useSeoMeta({
-  title: `${t('message.header.navigation.blog')} | opendata.swiss`,
+  title: `${t('message.header.navigation.blog')} | metadata.swiss`,
 })
 
 const breadcrumbs = [

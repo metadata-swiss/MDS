@@ -5,7 +5,7 @@
         <div class="footer-information__entry">
           <h3>{{ t('message.ods-footer.block_1.title') }}</h3>
           <p>{{ t('message.ods-footer.block_1.paragraph_1') }}</p>
-          <p>© opendata.swiss</p>
+          <p>© metadata.swiss</p>
         </div>
         <div class="footer-information__entry">
           <h3>{{ t('message.ods-footer.block_2.title') }}</h3>

@@ -50,7 +50,7 @@ const breadcrumbs = [
 ]
 
 useSeoMeta({
-  title: `${t('message.header.navigation.search')} | ${t('message.header.navigation.blog')} | opendata.swiss`,
+  title: `${t('message.header.navigation.search')} | ${t('message.header.navigation.blog')} | metadata.swiss`,
 })
 </script>
 

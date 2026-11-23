@@ -48,5 +48,16 @@ const emit = defineEmits<{
 </template>
 
 <style lang="scss" scoped>
+.top-bar__bar .container {
+  height: 1.75rem;
+  font-size: 0.75rem;
+}
 
+.top-bar__bar :deep(.btn),
+.top-bar__bar :deep(select) {
+  min-height: 0;
+  height: 1.75rem;
+  padding-block: 0;
+  font-size: 0.75rem;
+}
 </style>

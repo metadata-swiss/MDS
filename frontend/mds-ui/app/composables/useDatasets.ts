@@ -132,9 +132,10 @@ export function useDatasetsSearch() {
           {
             id: 'publisher',
             title: t('message.dataset_detail.publisher'),
+            // A publisher without identifier is selected by the search key iop-core gives it.
             items: (counts?.publishers ?? [])
-              .filter(item => item.value.identifier)
-              .map(item => ({ id: item.value.identifier ?? '', title: localize(item.value.name, language) || item.value.identifier || '', count: item.count ?? 0 })),
+              .map(item => ({ id: item.searchKey ?? item.value.identifier ?? '', title: localize(item.value.name, language) || item.value.identifier || '', count: item.count ?? 0 }))
+              .filter(item => item.id),
           },
         ]
       })

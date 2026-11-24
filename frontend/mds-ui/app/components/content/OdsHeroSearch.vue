@@ -36,6 +36,7 @@ form {
   padding-top: 30px;
 }
 
+/* OdsInput has no colour variant; this overrides the design system's input--outline border for the hero search. */
 form :deep(input) {
   border-color: var(--color-primary-600);
 }

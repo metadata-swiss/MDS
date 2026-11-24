@@ -84,7 +84,7 @@ useHead({
     { rel: 'manifest', href: '/site.webmanifest' },
   ],
   meta: [
-    { name: 'apple-mobile-web-app-title', content: 'opendata.swiss' },
+    { name: 'apple-mobile-web-app-title', content: 'metadata.swiss' },
     // you can add other default meta tags, e.g. description, viewport, etc
   ],
 })

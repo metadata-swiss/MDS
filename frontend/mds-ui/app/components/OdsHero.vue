@@ -85,18 +85,41 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  centered: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const computedClasses = computed(() => {
   let base = 'hero '
   if (props.type) base += `hero--${props.type} `
   if (props.floating) base += 'hero--floating '
+  if (props.centered) base += 'hero--centered '
   return base
 })
 </script>
 
 <style lang="scss" scoped>
 @use '@/assets/ods/ods_breakpoints.scss' as media;
+
+.hero--centered {
+  background-color: var(--color-background);
+
+  @include media.respond-to-lg {
+    padding-block: 8.5rem;
+  }
+
+  .container {
+    display: block;
+  }
+
+  .hero__content {
+    max-width: 56rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+}
 
 .hero--floating {
   position: relative;

@@ -14,7 +14,7 @@ const { data: page } = await useFetch<PagesCollectionItem>('/api/content/pages/h
 })
 
 useSeoMeta({
-  title: `${page.value?.title} | opendata.swiss`,
+  title: `${page.value?.title} | metadata.swiss`,
 })
 </script>
 

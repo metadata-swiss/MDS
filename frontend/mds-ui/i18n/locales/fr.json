@@ -4,10 +4,9 @@
       "login": "Connexion"
     },
     "header": {
-      "ods_logo": "Logo d'opendata.swiss",
       "navigation": {
         "home": "Accueil",
-        "datasets": "Jeux de données",
+        "datasets": "Données",
         "organizations": "Organisations",
         "blog": "Blog",
         "about": "À propos de nous",

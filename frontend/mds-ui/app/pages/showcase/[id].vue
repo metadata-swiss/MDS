@@ -68,7 +68,7 @@ const showcaseDatasets = computed(() => (datasetModels.value ?? []).map(({ ident
 }))
 
 useSeoMeta({
-  title: `${showcase.value?.title} | ${t('message.header.navigation.showcases')} | opendata.swiss`,
+  title: `${showcase.value?.title} | ${t('message.header.navigation.showcases')} | metadata.swiss`,
 })
 </script>
 

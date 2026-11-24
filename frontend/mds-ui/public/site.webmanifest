@@ -1,6 +1,6 @@
 {
-  "name": "opendata.swiss",
-  "short_name": "opendata.swiss",
+  "name": "metadata.swiss",
+  "short_name": "metadata.swiss",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

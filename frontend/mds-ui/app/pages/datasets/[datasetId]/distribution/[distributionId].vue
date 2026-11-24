@@ -105,7 +105,7 @@ const breadcrumbs = computed(() => [
 ])
 
 useSeoMeta({
-  title: () => `${distribution.value?.title} | ${dataset.value?.title} | ${t('message.header.navigation.datasets')} | opendata.swiss`,
+  title: () => `${distribution.value?.title} | ${dataset.value?.title} | ${t('message.header.navigation.datasets')} | metadata.swiss`,
 })
 
 const toDatasetHref = computed(() => localePath('/datasets/' + datasetId))

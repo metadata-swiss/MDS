@@ -70,7 +70,7 @@ useHead({
 })
 
 useSeoMeta({
-  title: () => `${notFound.value ? t('message.error_page.not_found_title') : t('message.error_page.unavailable_title')} | opendata.swiss`,
+  title: () => `${notFound.value ? t('message.error_page.not_found_title') : t('message.error_page.unavailable_title')} | metadata.swiss`,
   robots: 'noindex',
 })
 </script>

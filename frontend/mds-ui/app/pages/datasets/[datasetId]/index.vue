@@ -46,7 +46,7 @@ const distributions = computed(() => (dataset.value?.distributions ?? []).sort((
 const breadcrumbs = useDatasetBreadcrumbs(datasetId, computed(() => dataset.value?.title ?? ''))
 
 useSeoMeta({
-  title: () => `${dataset.value?.title} | ${t('message.header.navigation.datasets')} | opendata.swiss`,
+  title: () => `${dataset.value?.title} | ${t('message.header.navigation.datasets')} | metadata.swiss`,
 })
 
 const toDatasetSearchRoute = computed(() => {

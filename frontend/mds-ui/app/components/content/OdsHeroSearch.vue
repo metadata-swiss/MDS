@@ -31,6 +31,13 @@ function onEnter() {
 
 <style scoped>
 form {
+  max-width: 48rem;
+  margin-inline: auto;
   padding-top: 30px;
+}
+
+/* OdsInput has no colour variant; this overrides the design system's input--outline border for the hero search. */
+form :deep(input) {
+  border-color: var(--color-primary-600);
 }
 </style>

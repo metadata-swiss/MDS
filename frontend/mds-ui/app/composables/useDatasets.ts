@@ -29,6 +29,8 @@ const OPEN_DATASETS = {
  */
 const THEMES_VOCABULARY = 'Concept_DATASET_THEME'
 
+const EU_DATA_THEMES_VOCABULARY = 'VOCAB_EU_DATA_THEME'
+
 interface DatasetSearchQueryParams {
   q: Ref<string>
   /** Zero-based, like the old portal's search. */
@@ -59,7 +61,6 @@ export function useDatasetsSearch() {
       language: locale.value,
       query: queryParams.q.value || undefined,
       dcatCatalogs: selectedFacets.catalogues?.value,
-      // The categories are the I14Y themes, not the EU data themes of the catalog records.
       themes: selectedFacets.categories?.value,
       tenants: selectedFacets.organization?.value,
       publishers: selectedFacets.publisher?.value,
@@ -103,7 +104,9 @@ export function useDatasetsSearch() {
           {
             id: 'categories',
             title: t('message.dataset_detail.categories'),
-            items: (counts?.themes ?? []).map(item => ({ id: item.value.code ?? '', title: localize(item.value.name, language), count: item.count ?? 0 })),
+            items: (counts?.themes ?? [])
+              .filter(item => item.value.vocabularyIdentifier === EU_DATA_THEMES_VOCABULARY)
+              .map(item => ({ id: item.searchKey ?? item.value.code ?? '', title: localize(item.value.name, language), count: item.count ?? 0 })),
           },
           {
             id: 'format',

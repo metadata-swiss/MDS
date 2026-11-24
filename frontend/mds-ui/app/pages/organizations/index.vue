@@ -165,7 +165,7 @@ const breadcrumbs = [
 ]
 
 useSeoMeta({
-  title: `${t('message.header.navigation.organizations')} | opendata.swiss`,
+  title: `${t('message.header.navigation.organizations')} | metadata.swiss`,
 })
 
 onMounted(() => {

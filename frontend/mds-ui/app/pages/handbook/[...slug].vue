@@ -17,7 +17,7 @@ const { data, error } = await useFetch<HandbookCollectionItem>(`/api/content/han
 ensureFound(data.value, error.value)
 
 useSeoMeta({
-  title: `${data.value?.title} | ${t('message.header.navigation.handbook')} | opendata.swiss`,
+  title: `${data.value?.title} | ${t('message.header.navigation.handbook')} | metadata.swiss`,
 })
 
 // TODO: make sidebar navigation dynamic based on the handbook content

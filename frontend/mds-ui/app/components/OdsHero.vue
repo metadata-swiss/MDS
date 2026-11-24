@@ -85,12 +85,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  centered: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const computedClasses = computed(() => {
   let base = 'hero '
   if (props.type) base += `hero--${props.type} `
   if (props.floating) base += 'hero--floating '
+  if (props.centered) base += 'hero--centered '
   return base
 })
 </script>

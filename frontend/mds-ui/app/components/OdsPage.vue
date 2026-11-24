@@ -42,7 +42,7 @@ const hero = computed(() => {
     <Hero
       v-if="hero"
       :type="hero.image ? 'main-image' : 'default'"
-      class="hero--title-only"
+      :class="{ 'hero--title-only': !centeredHero }"
       :centered="centeredHero"
     >
       <template #title>

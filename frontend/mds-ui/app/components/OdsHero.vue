@@ -104,7 +104,7 @@ const computedClasses = computed(() => {
 @use '@/assets/ods/ods_breakpoints.scss' as media;
 
 .hero--centered {
-  background-color: white;
+  background-color: var(--color-background);
 
   @include media.respond-to-lg {
     padding-block: 8.5rem;

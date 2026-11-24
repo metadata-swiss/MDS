@@ -148,7 +148,7 @@ function isChildPageOfSubMenu(item: OdsNavTabItem) {
   font-size: 1.75rem;
   line-height: 1;
 
-  @media (min-width: 1024px) {
+  @include mdeia.respond-to-md {
     font-size: 2.75rem;
   }
 }
@@ -163,7 +163,7 @@ function isChildPageOfSubMenu(item: OdsNavTabItem) {
   border: 4px solid var(--color-primary-600);
   border-radius: 50%;
 
-  @media (min-width: 1024px) {
+  @include mdeia.respond-to-md {
     width: 1.75rem;
     height: 1.75rem;
     border-width: 5px;

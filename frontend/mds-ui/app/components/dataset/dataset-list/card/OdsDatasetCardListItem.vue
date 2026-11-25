@@ -12,7 +12,7 @@
       </div>
     </template>
     <div>
-      <p lass="meta-info">
+      <p class="meta-info">
         <span
           v-for="(category, index) in props.dataset.getCategoriesForLanguage(locale).map(k => k.label)"
           :key="`${category}-${index}`"

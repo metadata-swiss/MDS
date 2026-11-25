@@ -15,7 +15,7 @@
     <div class="container container--grid gap--responsive">
       <div class="hero__content">
         <p
-          v-if="slots['#meta-info']"
+          v-if="slots['meta-info']"
           class="meta-info"
         >
           <slot name="meta-info" />

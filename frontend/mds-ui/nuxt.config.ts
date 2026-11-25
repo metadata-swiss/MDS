@@ -1,6 +1,4 @@
-import { dirname, resolve } from 'node:path'
-
-const __dirname = dirname(new URL(import.meta.url).pathname)
+import { resolve } from 'node:path'
 
 // iop-core used by the generated client (api-client/). Override at runtime with NUXT_PUBLIC_IOP_CORE_URL.
 const iopCoreUrl = process.env.NUXT_PUBLIC_IOP_CORE_URL || 'https://core.i14y.d.c.bfs.admin.ch'
@@ -58,7 +56,6 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      rootDir: __dirname,
       iopCoreUrl,
       // The login button of the top header opens the I14Y input portal. Override at runtime with NUXT_PUBLIC_LOGIN_URL.
       loginUrl: 'https://input.i14y.d.c.bfs.admin.ch',
@@ -84,6 +81,7 @@ export default defineNuxtConfig({
         },
       },
     },
+    compressPublicAssets: { gzip: true, brotli: true },
     prerender: {
       // Nuxt Content prerenders each collection's database (sql_dump.txt) as a public file, which the static file
       // handler serves before any middleware. Without it, the server serves the dump from a route, so that
@@ -106,8 +104,8 @@ export default defineNuxtConfig({
     locales: [
       { code: 'de', name: 'Deutsch', file: 'de.json' },
       { code: 'en', name: 'English', file: 'en.json' },
-      { code: 'fr', name: 'Francais', file: 'fr.json' },
-      { code: 'it', name: 'Itlaliano', file: 'it.json' },
+      { code: 'fr', name: 'Français', file: 'fr.json' },
+      { code: 'it', name: 'Italiano', file: 'it.json' },
     ],
     experimental: {
       localeDetector: 'localeDetector.ts',
@@ -122,5 +120,8 @@ export default defineNuxtConfig({
         normalizeIconName: false,
       },
     ],
+    clientBundle: {
+      icons: ['ods:Spinner'],
+    },
   },
 })

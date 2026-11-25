@@ -16,6 +16,6 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (!hasLocale) {
     const locale = $i18n.locale.value || $i18n.defaultLocale
-    return navigateTo(`/${locale}${path}`, { redirectCode: 302 })
+    return navigateTo(`/${locale}${to.fullPath}`, { redirectCode: 302 })
   }
 })

@@ -14,11 +14,16 @@ const localePath = useLocalePath()
 const page = parseInt(route.params.page) || 1
 
 // One page of posts and the number of pages; the page size is set in server/api/content/blog/index.get.ts.
-const { data } = await useFetch('/api/content/blog', {
+const { data, error } = await useFetch('/api/content/blog', {
   query: { locale: locale.value, page },
 })
+ensureFound(data.value, error.value)
 const posts = computed(() => data.value?.posts ?? [])
 const pageCount = computed(() => data.value?.pageCount ?? 0)
+
+if (page > Math.max(pageCount.value, 1)) {
+  throw createError({ statusCode: 404, statusMessage: 'Page Not Found', fatal: true })
+}
 
 useSeoMeta({
   title: `${t('message.header.navigation.blog')} | metadata.swiss`,

@@ -59,11 +59,11 @@
               class="license-icon"
             />
           </div>
-          <span
-            v-if="!props.distribution.license"
-            class="meta-empty"
-          >-</span>
         </div>
+        <span
+          v-else
+          class="meta-empty"
+        >-</span>
       </div>
     </div>
 

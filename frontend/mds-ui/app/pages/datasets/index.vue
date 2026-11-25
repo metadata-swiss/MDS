@@ -72,6 +72,7 @@ const sortOptions = computed<SortOption[]>(() => [
 const { useSearch } = useDatasetsSearch()
 const {
   query,
+  isSearchPending,
   getSearchResultsEnhanced,
   getSearchResultsCount,
   getSearchResultsPagesCount,
@@ -91,17 +92,10 @@ const datasets = computed(() => {
 
 const { suspense } = query
 
-const LIST_TYPE_KEY = 'datasets-list-type'
-const getInitialListType = () => {
-  const stored = typeof window !== 'undefined' ? window.localStorage.getItem(LIST_TYPE_KEY) : null
-  return stored === 'card' ? 'card' : 'list'
-}
-const listType = ref<'card' | 'list'>(getInitialListType())
-
-watch(listType, (newType) => {
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem(LIST_TYPE_KEY, newType)
-  }
+const listType = useCookie<'card' | 'list'>('datasets-list-type', {
+  default: () => 'list',
+  maxAge: 60 * 60 * 24 * 365,
+  sameSite: 'lax',
 })
 
 const activeFacets = useActiveFacets({
@@ -247,10 +241,18 @@ await suspense()
           <OdsListCardToggle v-model="listType" />
         </template>
 
-        <!-- <div v-if="isFetching" class="is-fetching">
-              Fetching...
-            </div> -->
+        <div
+          v-if="isSearchPending"
+          class="datasets-loading"
+        >
+          <SvgIcon
+            icon="Spinner"
+            size="3xl"
+            spin
+          />
+        </div>
         <OdsDatasetList
+          v-else
           :items="datasets"
           :list-type="listType"
           :search-params="route.query"
@@ -276,7 +278,10 @@ await suspense()
           />
         </div>
 
-        <div class="notification notification--info">
+        <div
+          v-if="!isSearchPending"
+          class="notification notification--info"
+        >
           <SvgIcon
             icon="InfoCircle"
             role="notification"
@@ -302,5 +307,9 @@ await suspense()
 </template>
 
 <style lang="scss" scoped>
-
+.datasets-loading {
+  display: flex;
+  justify-content: center;
+  padding-block: 4rem;
+}
 </style>

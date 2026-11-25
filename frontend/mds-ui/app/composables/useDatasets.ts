@@ -146,6 +146,7 @@ export function useDatasetsSearch() {
 
     return {
       query,
+      isSearchPending: searchQuery.isFetching,
       getSearchResultsEnhanced,
       getSearchResultsCount,
       getSearchResultsPagesCount,

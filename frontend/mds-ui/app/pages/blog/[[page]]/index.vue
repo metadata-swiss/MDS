@@ -20,6 +20,10 @@ const { data } = await useFetch('/api/content/blog', {
 const posts = computed(() => data.value?.posts ?? [])
 const pageCount = computed(() => data.value?.pageCount ?? 0)
 
+if (page > Math.max(pageCount.value, 1)) {
+  throw createError({ statusCode: 404, statusMessage: 'Page Not Found', fatal: true })
+}
+
 useSeoMeta({
   title: `${t('message.header.navigation.blog')} | metadata.swiss`,
 })

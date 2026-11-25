@@ -120,5 +120,8 @@ export default defineNuxtConfig({
         normalizeIconName: false,
       },
     ],
+    clientBundle: {
+      icons: ['ods:Spinner'],
+    },
   },
 })

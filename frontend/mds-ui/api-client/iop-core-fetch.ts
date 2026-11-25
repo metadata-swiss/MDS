@@ -18,5 +18,6 @@ export function iopCoreFetch<T>(url: string, options: RequestInit): Promise<T> {
     headers: options.headers,
     body: options.body,
     signal: options.signal,
+    retry: 0,
   }) as Promise<T>
 }

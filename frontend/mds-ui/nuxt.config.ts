@@ -81,6 +81,7 @@ export default defineNuxtConfig({
         },
       },
     },
+    compressPublicAssets: { gzip: true, brotli: true },
     prerender: {
       // Nuxt Content prerenders each collection's database (sql_dump.txt) as a public file, which the static file
       // handler serves before any middleware. Without it, the server serves the dump from a route, so that

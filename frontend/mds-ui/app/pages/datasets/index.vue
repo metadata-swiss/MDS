@@ -91,17 +91,10 @@ const datasets = computed(() => {
 
 const { suspense } = query
 
-const LIST_TYPE_KEY = 'datasets-list-type'
-const getInitialListType = () => {
-  const stored = typeof window !== 'undefined' ? window.localStorage.getItem(LIST_TYPE_KEY) : null
-  return stored === 'card' ? 'card' : 'list'
-}
-const listType = ref<'card' | 'list'>(getInitialListType())
-
-watch(listType, (newType) => {
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem(LIST_TYPE_KEY, newType)
-  }
+const listType = useCookie<'card' | 'list'>('datasets-list-type', {
+  default: () => 'list',
+  maxAge: 60 * 60 * 24 * 365,
+  sameSite: 'lax',
 })
 
 const activeFacets = useActiveFacets({

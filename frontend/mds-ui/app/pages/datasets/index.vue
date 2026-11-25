@@ -251,54 +251,56 @@ await suspense()
             spin
           />
         </div>
-        <template v-else>
-          <OdsDatasetList
-            :items="datasets"
-            :list-type="listType"
-            :search-params="route.query"
+        <OdsDatasetList
+          v-else
+          :items="datasets"
+          :list-type="listType"
+          :search-params="route.query"
+        />
+        <div class="pagination pagination--right">
+          <OdsPagination
+            :current-page="(Number(route.query.page ?? 1))"
+            :total-pages="getSearchResultsPagesCount"
+            :pagination-items="[
+              {
+                icon: 'ChevronLeft',
+                label: t('message.ods-pagination.previous'),
+                page: Number(route.query.page ?? 1) - 1,
+              },
+              {
+                icon: 'ChevronRight',
+                label: t('message.ods-pagination.next'),
+                page: Number(route.query.page ?? 1) + 1,
+              },
+            ]"
+            :search-results-element="searchResultsElement ?? undefined"
+            @page-change="goToPage"
           />
-          <div class="pagination pagination--right">
-            <OdsPagination
-              :current-page="(Number(route.query.page ?? 1))"
-              :total-pages="getSearchResultsPagesCount"
-              :pagination-items="[
-                {
-                  icon: 'ChevronLeft',
-                  label: t('message.ods-pagination.previous'),
-                  page: Number(route.query.page ?? 1) - 1,
-                },
-                {
-                  icon: 'ChevronRight',
-                  label: t('message.ods-pagination.next'),
-                  page: Number(route.query.page ?? 1) + 1,
-                },
-              ]"
-              :search-results-element="searchResultsElement ?? undefined"
-              @page-change="goToPage"
-            />
-          </div>
+        </div>
 
-          <div class="notification notification--info">
-            <SvgIcon
-              icon="InfoCircle"
-              role="notification"
-            />
-            <div class="notification__content">
-              <div class="text--bold">
-                {{ t('message.dataset_search.help.title') }}
-              </div>
-              <div>
-                {{ t('message.dataset_search.help.text') }}
-              </div>
-              <NuxtLinkLocale
-                to="/contact"
-                class="link"
-              >
-                {{ t('message.dataset_search.help.link') }}
-              </NuxtLinkLocale>
+        <div
+          v-if="!isSearchPending"
+          class="notification notification--info"
+        >
+          <SvgIcon
+            icon="InfoCircle"
+            role="notification"
+          />
+          <div class="notification__content">
+            <div class="text--bold">
+              {{ t('message.dataset_search.help.title') }}
             </div>
+            <div>
+              {{ t('message.dataset_search.help.text') }}
+            </div>
+            <NuxtLinkLocale
+              to="/contact"
+              class="link"
+            >
+              {{ t('message.dataset_search.help.link') }}
+            </NuxtLinkLocale>
           </div>
-        </template>
+        </div>
       </OdsSearchResults>
     </div>
   </div>

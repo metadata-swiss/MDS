@@ -19,7 +19,10 @@ export default defineNuxtPlugin((nuxtApp) => {
       queries: {
         staleTime: 10000,
         refetchOnWindowFocus: false,
-        retry: 1,
+        retry: (failureCount, error) => {
+          const status = (error as { statusCode?: number }).statusCode
+          return import.meta.client && failureCount < 1 && (status === undefined || status >= 500)
+        },
       },
     },
   })

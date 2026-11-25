@@ -34,6 +34,7 @@
               required && (!selected || selected.length === 0)
             "
             v-bind="attributes as any"
+            :aria-labelledby="label ? `${inputId}-label` : attributes['aria-labelledby']"
             @keydown="onSearchKeydown"
             v-on="events"
           >

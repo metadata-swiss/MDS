@@ -2,6 +2,7 @@
   <div :class="`form-group form__group__${type}`">
     <label
       v-if="label"
+      :id="`${props.for}-label`"
       :for="props.for"
       :class="labelClasses"
     >

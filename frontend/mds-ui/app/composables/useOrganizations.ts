@@ -40,7 +40,7 @@ export function useOrganizationSearch({ q, selectedFacets }: UseOrganizationSear
     if (!text) {
       return true
     }
-    const values = [organization.identifier, ...Object.values(organization.name ?? {}), ...Object.values(organization.prefLabel ?? {})]
+    const values = [organization.identifier, ...Object.values(organization.name ?? {}), ...Object.values(organization.prefLabel ?? {}), ...Object.values(organization.description ?? {})]
     return values.some(value => value?.toLowerCase().includes(text))
   }
 

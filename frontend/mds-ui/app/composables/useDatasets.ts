@@ -83,6 +83,7 @@ export function useDatasetsSearch() {
 
     const query = {
       suspense: () => Promise.all([searchQuery.suspense(), countQuery.suspense()]),
+      error: computed(() => searchQuery.error.value ?? countQuery.error.value),
     }
 
     const getSearchResultsEnhanced = computed(() => searchQuery.data.value ?? [])
@@ -149,7 +150,7 @@ export function useDatasetsSearch() {
     return {
       query,
       isSearchPending: searchQuery.isFetching,
-      isSearchUnavailable: computed(() => isServiceUnavailable(searchQuery.error.value ?? countQuery.error.value)),
+      isSearchUnavailable: computed(() => isServiceUnavailable(query.error.value)),
       getSearchResultsEnhanced,
       getSearchResultsCount,
       getSearchResultsPagesCount,

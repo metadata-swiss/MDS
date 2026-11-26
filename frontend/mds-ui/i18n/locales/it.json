@@ -74,7 +74,6 @@
       "identifier": "Identificatore",
       "hierarchy_level": "Livello gerarchico",
       "empty": "Nessuna organizzazione trovata per questa ricerca.",
-      "load_error": "Al momento non e possibile caricare le organizzazioni.",
       "sub_organizations": "Sottounità",
       "iri": "IRI (Permalink)"
     },

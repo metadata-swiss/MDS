@@ -18,6 +18,7 @@ import {
 import { getParentId, organizationLabel, type Organization, type OrganizationTreeNode } from '~/model/organizations'
 import { useOrganizationSearch, organizationFacets } from '~/composables/useOrganizations'
 import { useDatasetCountByOrganization } from '~/composables/useDatasets'
+import { ensureAvailable } from '~/utils/ensureFound'
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -68,6 +69,7 @@ const {
 const { query: datasetCountQuery, counts: datasetCountByOrganizationId } = useDatasetCountByOrganization()
 
 await Promise.all([query.suspense(), datasetCountQuery.suspense()])
+ensureAvailable(query.error.value)
 
 const activeFacets = useActiveFacets({
   facets: organizationFacets,

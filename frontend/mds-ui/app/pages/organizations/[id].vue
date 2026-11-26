@@ -43,7 +43,6 @@ const { query: datasetCountQuery, counts: datasetCountByOrganizationId } = useDa
 await Promise.all([organizationsQuery.suspense(), datasetCountQuery.suspense()])
 
 const organizationPending = organizationsQuery.isPending
-const organizationError = organizationsQuery.error
 
 function getOrganizationLabel(organization: Organization) {
   return organizationLabel(organization, locale.value)
@@ -65,11 +64,7 @@ const organizationById = computed(() => {
 
 const organization = computed(() => organizations.value.find(item => item.identifier === organizationId.value))
 
-// When the organizations could be loaded but this one isn't among them, the page is a 404. A failed load keeps
-// showing the load error below.
-if (!organizationError.value) {
-  ensureFound(organization.value)
-}
+ensureFound(organization.value, organizationsQuery.error.value)
 
 const parentOrganization = computed(() => {
   const currentOrganization = organization.value
@@ -178,14 +173,7 @@ useSeoMeta({
     <section class="section section--default">
       <div class="container">
         <OdsNotification
-          v-if="organizationError"
-          type="error"
-        >
-          <p>{{ t('message.organizations.load_error') }}</p>
-        </OdsNotification>
-
-        <OdsNotification
-          v-else-if="!organizationPending && !organization"
+          v-if="!organizationPending && !organization"
           type="info"
         >
           <p>{{ t('message.organizations.empty') }}</p>

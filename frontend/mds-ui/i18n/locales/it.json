@@ -57,6 +57,10 @@
         "title": "Non ha trovato quello che cerca?",
         "text": "Saremo lieti di fornirle informazioni anche personalmente. La preghiamo di contattarci tramite il modulo di contatto.",
         "link": "Modulo di contatto"
+      },
+      "unavailable": {
+        "title": "Servizio temporaneamente non disponibile",
+        "text": "Riprovi più tardi."
       }
     },
     "organizations": {

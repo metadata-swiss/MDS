@@ -5,6 +5,7 @@ import OdsPage from '~/components/OdsPage.vue'
 import OdsBreadcrumbs from '~/components/OdsBreadcrumbs.vue'
 import OdsSearchPanel from '~/components/OdsSearchPanel.vue'
 import OdsOrganizationTree from '~/components/organizations/OdsOrganizationTree.vue'
+import OdsNotification from '~/components/OdsNotification.vue'
 import { homePageBreadcrumb } from '~/composables/breadcrumbs'
 import { useSeoMeta } from 'nuxt/app'
 import { useI18n } from 'vue-i18n'
@@ -206,12 +207,12 @@ onMounted(() => {
           :showcase-count-by-organization-id="showcaseCountByOrganizationId"
         />
 
-        <p
+        <OdsNotification
           v-else
-          class="notification notification--info"
+          type="info"
         >
-          {{ t('message.organizations.empty') }}
-        </p>
+          <p>{{ t('message.organizations.empty') }}</p>
+        </OdsNotification>
       </div>
     </section>
   </OdsPage>

@@ -121,7 +121,7 @@ export default defineNuxtConfig({
       },
     ],
     clientBundle: {
-      icons: ['ods:Spinner'],
+      icons: ['ods:Spinner', 'ods:InfoCircle', 'ods:CheckmarkCircle', 'ods:Warning', 'ods:WarningCircle', 'ods:HelpCircle'],
     },
   },
 })

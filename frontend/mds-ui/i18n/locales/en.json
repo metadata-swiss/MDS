@@ -56,6 +56,10 @@
         "title": "Didn't find what you are looking for?",
         "text": "We are also happy to help you in person. Please contact us through the contact form.",
         "link": "Contact form"
+      },
+      "unavailable": {
+        "title": "Service temporarily unavailable",
+        "text": "Please try again later."
       }
     },
     "organizations": {

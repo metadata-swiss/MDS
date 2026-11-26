@@ -5,6 +5,7 @@ import OdsPage from '~/components/OdsPage.vue'
 import OdsBreadcrumbs from '~/components/OdsBreadcrumbs.vue'
 import OdsCard from '~/components/content/OdsCard.vue'
 import OdsInfoBlock from '~/components/OdsInfoBlock.vue'
+import OdsNotification from '~/components/OdsNotification.vue'
 import OdsOrganizationListItem from '~/components/organizations/OdsOrganizationListItem.vue'
 import { homePageBreadcrumb } from '~/composables/breadcrumbs'
 import { useSeoMeta } from 'nuxt/app'
@@ -176,19 +177,19 @@ useSeoMeta({
 
     <section class="section section--default">
       <div class="container">
-        <p
+        <OdsNotification
           v-if="organizationError"
-          class="notification notification--danger"
+          type="error"
         >
-          {{ t('message.organizations.load_error') }}
-        </p>
+          <p>{{ t('message.organizations.load_error') }}</p>
+        </OdsNotification>
 
-        <p
+        <OdsNotification
           v-else-if="!organizationPending && !organization"
-          class="notification notification--info"
+          type="info"
         >
-          {{ t('message.organizations.empty') }}
-        </p>
+          <p>{{ t('message.organizations.empty') }}</p>
+        </OdsNotification>
 
         <div
           v-else-if="organization"

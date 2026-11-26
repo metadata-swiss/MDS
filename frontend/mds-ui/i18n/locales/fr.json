@@ -57,6 +57,10 @@
         "title": "Vous n'avez pas trouvé ce que vous cherchez ?",
         "text": "Nous vous renseignons volontiers aussi personnellement. Veuillez nous contacter via le formulaire de contact.",
         "link": "Formulaire de contact"
+      },
+      "unavailable": {
+        "title": "Service temporairement indisponible",
+        "text": "Veuillez réessayer plus tard."
       }
     },
     "organizations": {

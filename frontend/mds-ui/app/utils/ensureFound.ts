@@ -1,5 +1,6 @@
 import { createError } from '#imports'
 import type { ErrorType } from '~~/api-client/iop-core-fetch'
+import { isServiceUnavailable } from '~/utils/isServiceUnavailable'
 
 /**
  * Ends rendering with the error page (app/error.vue) when a page has nothing to show: 404 when the resource doesn't
@@ -7,7 +8,7 @@ import type { ErrorType } from '~~/api-client/iop-core-fetch'
  * status 200, which search engines index as a real page.
  */
 export function ensureFound<T>(value: T | null | undefined, error?: ErrorType<unknown> | null): asserts value is T {
-  if (error && error.statusCode !== 400 && error.statusCode !== 404) {
+  if (isServiceUnavailable(error)) {
     throw createError({ statusCode: 503, statusMessage: 'Service Unavailable', fatal: true })
   }
   if (value === null || value === undefined) {

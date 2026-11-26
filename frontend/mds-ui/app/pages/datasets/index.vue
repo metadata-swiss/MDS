@@ -19,6 +19,7 @@ import { syncFacetsFromRoute, useActiveFacets, useFacets, useFacetSync } from '~
 
 import OdsSearchPanel from '~/components/OdsSearchPanel.vue'
 import OdsSearchResults from '~/components/OdsSearchResults.vue'
+import OdsNotification from '~/components/OdsNotification.vue'
 import type { AppLanguage } from '~/constants/langages'
 import { CatalogSearchSort } from '~~/api-client/generated/iop-core'
 
@@ -73,6 +74,7 @@ const { useSearch } = useDatasetsSearch()
 const {
   query,
   isSearchPending,
+  isSearchUnavailable,
   getSearchResultsEnhanced,
   getSearchResultsCount,
   getSearchResultsPagesCount,
@@ -207,6 +209,10 @@ useSeoMeta({
 })
 
 await suspense()
+
+if (isSearchUnavailable.value) {
+  throw createError({ statusCode: 503, statusMessage: 'Service Unavailable', fatal: true })
+}
 </script>
 
 <template>
@@ -251,6 +257,15 @@ await suspense()
             spin
           />
         </div>
+        <OdsNotification
+          v-else-if="isSearchUnavailable"
+          type="error"
+          :title="t('message.dataset_search.unavailable.title')"
+        >
+          <div>
+            {{ t('message.dataset_search.unavailable.text') }}
+          </div>
+        </OdsNotification>
         <OdsDatasetList
           v-else
           :items="datasets"
@@ -278,29 +293,21 @@ await suspense()
           />
         </div>
 
-        <div
-          v-if="!isSearchPending"
-          class="notification notification--info"
+        <OdsNotification
+          v-if="!isSearchPending && !isSearchUnavailable"
+          type="info"
+          :title="t('message.dataset_search.help.title')"
         >
-          <SvgIcon
-            icon="InfoCircle"
-            role="notification"
-          />
-          <div class="notification__content">
-            <div class="text--bold">
-              {{ t('message.dataset_search.help.title') }}
-            </div>
-            <div>
-              {{ t('message.dataset_search.help.text') }}
-            </div>
-            <NuxtLinkLocale
-              to="/contact"
-              class="link"
-            >
-              {{ t('message.dataset_search.help.link') }}
-            </NuxtLinkLocale>
+          <div>
+            {{ t('message.dataset_search.help.text') }}
           </div>
-        </div>
+          <NuxtLinkLocale
+            to="/contact"
+            class="link"
+          >
+            {{ t('message.dataset_search.help.link') }}
+          </NuxtLinkLocale>
+        </OdsNotification>
       </OdsSearchResults>
     </div>
   </div>

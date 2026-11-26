@@ -10,6 +10,7 @@ import {
   QueryClient,
   VueQueryPlugin,
 } from '@tanstack/vue-query'
+import { isServiceUnavailable } from '~/utils/isServiceUnavailable'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vueQueryState = useState<DehydratedState | null>('vue-query')
@@ -19,10 +20,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       queries: {
         staleTime: 10000,
         refetchOnWindowFocus: false,
-        retry: (failureCount, error) => {
-          const status = (error as { statusCode?: number }).statusCode
-          return import.meta.client && failureCount < 1 && (status === undefined || status >= 500)
-        },
+        retry: (failureCount, error) => import.meta.client && failureCount < 1 && isServiceUnavailable(error),
       },
     },
   })

@@ -18,10 +18,10 @@
     "@azure/app-configuration-provider": "^2.6.0",
     "@azure/identity": "^4.14.0",
     "@certible/use-matomo": "^1.1.0",
-    "@nuxt/content": "^3.15.0",
+    "@nuxt/content": "^3.17.0",
     "@nuxt/icon": "^2.1.1",
     "@nuxt/image": "^2.1.0",
-    "@nuxtjs/i18n": "^10.2.1",
+    "@nuxtjs/i18n": "^10.7.0",
     "@tanstack/vue-query": "^5.104.1",
     "is-absolute-url": "^5.0.0",
     "minisearch": "^7.2.0",
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.12.1",
+    "@types/node": "^24",
     "chokidar": "^4.0.3",
     "eslint": "^10.13.0",
     "husky": "^9.1.7",
@@ -45,6 +46,14 @@
     "shx": "^0.4.0",
     "typescript": "^5",
     "vue-tsc": "^3.3.7"
+  },
+  "overrides": {
+    "@nuxt/content": {
+      "zod": "$zod"
+    },
+    "readdir-glob": {
+      "minimatch": "^11.0.9"
+    }
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,vue}": [

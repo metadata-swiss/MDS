@@ -57,6 +57,10 @@
         "title": "Haben Sie nicht gefunden, wonach Sie suchen?",
         "text": "Gerne geben wir Ihnen auch persönlich Auskunft. Bitte melden Sie sich via Kontaktformular bei uns.",
         "link": "Kontaktformular"
+      },
+      "unavailable": {
+        "title": "Dienst vorübergehend nicht verfügbar",
+        "text": "Bitte versuchen Sie es später noch einmal."
       }
     },
     "organizations": {
@@ -70,7 +74,6 @@
       "identifier": "Identifier",
       "hierarchy_level": "Hierarchiestufe",
       "empty": "Für diese Suche wurden keine Organisationen gefunden.",
-      "load_error": "Organisationen konnten momentan nicht geladen werden.",
       "sub_organizations": "Untereinheiten",
       "iri": "IRI (Permalink)"
     },

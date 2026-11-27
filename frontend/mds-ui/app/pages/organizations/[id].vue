@@ -5,6 +5,7 @@ import OdsPage from '~/components/OdsPage.vue'
 import OdsBreadcrumbs from '~/components/OdsBreadcrumbs.vue'
 import OdsCard from '~/components/content/OdsCard.vue'
 import OdsInfoBlock from '~/components/OdsInfoBlock.vue'
+import OdsNotification from '~/components/OdsNotification.vue'
 import OdsOrganizationListItem from '~/components/organizations/OdsOrganizationListItem.vue'
 import { homePageBreadcrumb } from '~/composables/breadcrumbs'
 import { useSeoMeta } from 'nuxt/app'
@@ -13,7 +14,7 @@ import { useOrganizations } from '~/composables/useOrganizations'
 import { getParentId, organizationLabel, type Organization, type OrganizationTreeNode } from '~/model/organizations'
 import { useDatasetCountByOrganization } from '~/composables/useDatasets'
 import { localize } from '~/utils/getCurrentTranslation'
-import { ensureFound } from '~/utils/ensureFound'
+import { ensureFound } from '~/utils/apiErrors'
 import { buildAgentIri } from '~/utils/iri'
 
 const route = useRoute()
@@ -42,7 +43,6 @@ const { query: datasetCountQuery, counts: datasetCountByOrganizationId } = useDa
 await Promise.all([organizationsQuery.suspense(), datasetCountQuery.suspense()])
 
 const organizationPending = organizationsQuery.isPending
-const organizationError = organizationsQuery.error
 
 function getOrganizationLabel(organization: Organization) {
   return organizationLabel(organization, locale.value)
@@ -64,11 +64,7 @@ const organizationById = computed(() => {
 
 const organization = computed(() => organizations.value.find(item => item.identifier === organizationId.value))
 
-// When the organizations could be loaded but this one isn't among them, the page is a 404. A failed load keeps
-// showing the load error below.
-if (!organizationError.value) {
-  ensureFound(organization.value)
-}
+ensureFound(organization.value, organizationsQuery.error.value)
 
 const parentOrganization = computed(() => {
   const currentOrganization = organization.value
@@ -176,19 +172,12 @@ useSeoMeta({
 
     <section class="section section--default">
       <div class="container">
-        <p
-          v-if="organizationError"
-          class="notification notification--danger"
+        <OdsNotification
+          v-if="!organizationPending && !organization"
+          type="info"
         >
-          {{ t('message.organizations.load_error') }}
-        </p>
-
-        <p
-          v-else-if="!organizationPending && !organization"
-          class="notification notification--info"
-        >
-          {{ t('message.organizations.empty') }}
-        </p>
+          <p>{{ t('message.organizations.empty') }}</p>
+        </OdsNotification>
 
         <div
           v-else-if="organization"

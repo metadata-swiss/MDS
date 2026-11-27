@@ -2,7 +2,7 @@
 import OdsPage from '~/components/OdsPage.vue'
 import { homePageBreadcrumb } from '~/composables/breadcrumbs'
 import OdsBreadcrumbs from '~/components/OdsBreadcrumbs.vue'
-import { ensureFound } from '~/utils/ensureFound'
+import { ensureFound } from '~/utils/apiErrors'
 
 const route = useRoute()
 const { locale, t } = useI18n()

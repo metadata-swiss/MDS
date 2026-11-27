@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { HandbookCollectionItem } from '@nuxt/content'
 import OdsHandbookPage from '~/components/handbook/OdsHandbookPage.vue'
-import { ensureFound } from '~/utils/ensureFound'
+import { ensureFound } from '~/utils/apiErrors'
 
 const { locale, t } = useI18n()
 const route = useRoute()

@@ -3,7 +3,7 @@ import type { PagesCollectionItem } from '@nuxt/content'
 import OdsBreadcrumbs from '~/components/OdsBreadcrumbs.vue'
 import { useBreadcrumbs } from '~/composables/breadcrumbs'
 import OdsPage from '~/components/OdsPage.vue'
-import { ensureFound } from '~/utils/ensureFound'
+import { ensureFound } from '~/utils/apiErrors'
 
 const route = useRoute()
 const { locale } = useI18n()

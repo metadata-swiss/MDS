@@ -1,5 +1,6 @@
 import type { MaybeRefOrGetter, Ref } from 'vue'
 import { computed, toValue } from 'vue'
+import { keepPreviousData } from '@tanstack/vue-query'
 import { useI18n } from '#imports'
 import {
   SearchResourceType,
@@ -13,6 +14,7 @@ import {
 import type { FacetGroup } from '~/composables/useFacets'
 import { organizationLabel } from '~/model/organizations'
 import { localize } from '~/utils/getCurrentTranslation'
+import { isUnexpectedError } from '~/utils/apiErrors'
 
 // In the order of the original opendata.swiss filters
 export const datasetFacets = ['catalogues', 'categories', 'format', 'keywords', 'license', 'organization', 'publisher'] as const
@@ -76,11 +78,12 @@ export function useDatasetsSearch() {
       pageSize: queryParams.limit.value,
     }))
 
-    const searchQuery = useGetSearch(searchParams)
-    const countQuery = useGetSearchCount(countParams)
+    const searchQuery = useGetSearch(searchParams, { query: { placeholderData: keepPreviousData } })
+    const countQuery = useGetSearchCount(countParams, { query: { placeholderData: keepPreviousData } })
 
     const query = {
       suspense: () => Promise.all([searchQuery.suspense(), countQuery.suspense()]),
+      error: computed(() => searchQuery.error.value ?? countQuery.error.value),
     }
 
     const getSearchResultsEnhanced = computed(() => searchQuery.data.value ?? [])
@@ -147,6 +150,7 @@ export function useDatasetsSearch() {
     return {
       query,
       isSearchPending: searchQuery.isFetching,
+      isSearchUnavailable: computed(() => isUnexpectedError(query.error.value)),
       getSearchResultsEnhanced,
       getSearchResultsCount,
       getSearchResultsPagesCount,

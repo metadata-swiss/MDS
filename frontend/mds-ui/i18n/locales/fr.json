@@ -57,6 +57,10 @@
         "title": "Vous n'avez pas trouvé ce que vous cherchez ?",
         "text": "Nous vous renseignons volontiers aussi personnellement. Veuillez nous contacter via le formulaire de contact.",
         "link": "Formulaire de contact"
+      },
+      "unavailable": {
+        "title": "Service temporairement indisponible",
+        "text": "Veuillez réessayer plus tard."
       }
     },
     "organizations": {
@@ -70,7 +74,6 @@
       "identifier": "Identifiant",
       "hierarchy_level": "Niveau hiérarchique",
       "empty": "Aucune organisation ne correspond à cette recherche.",
-      "load_error": "Les organisations ne peuvent pas être chargées pour le moment.",
       "sub_organizations": "Sous-unités",
       "iri": "IRI (Permalien)"
     },

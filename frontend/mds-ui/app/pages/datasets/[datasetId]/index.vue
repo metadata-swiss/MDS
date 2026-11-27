@@ -20,7 +20,7 @@ import { useSeoMeta } from 'nuxt/app'
 import type { TagItem } from '~/components/OdsTagItem.vue'
 import OdsItemKind from '~/components/dataset-detail/OdsItemKind.vue'
 import type { AppLanguage } from '~/constants/langages'
-import { ensureFound } from '~/utils/ensureFound'
+import { ensureFound } from '~/utils/apiErrors'
 
 const { locale, t } = useI18n()
 const route = useRoute()

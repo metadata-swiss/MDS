@@ -5,6 +5,7 @@ import OdsPage from '~/components/OdsPage.vue'
 import OdsBreadcrumbs from '~/components/OdsBreadcrumbs.vue'
 import OdsSearchPanel from '~/components/OdsSearchPanel.vue'
 import OdsOrganizationTree from '~/components/organizations/OdsOrganizationTree.vue'
+import OdsNotification from '~/components/OdsNotification.vue'
 import { homePageBreadcrumb } from '~/composables/breadcrumbs'
 import { useSeoMeta } from 'nuxt/app'
 import { useI18n } from 'vue-i18n'
@@ -17,6 +18,7 @@ import {
 import { getParentId, organizationLabel, type Organization, type OrganizationTreeNode } from '~/model/organizations'
 import { useOrganizationSearch, organizationFacets } from '~/composables/useOrganizations'
 import { useDatasetCountByOrganization } from '~/composables/useDatasets'
+import { ensureAvailable } from '~/utils/apiErrors'
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -67,6 +69,7 @@ const {
 const { query: datasetCountQuery, counts: datasetCountByOrganizationId } = useDatasetCountByOrganization()
 
 await Promise.all([query.suspense(), datasetCountQuery.suspense()])
+ensureAvailable(query.error.value)
 
 const activeFacets = useActiveFacets({
   facets: organizationFacets,
@@ -206,12 +209,12 @@ onMounted(() => {
           :showcase-count-by-organization-id="showcaseCountByOrganizationId"
         />
 
-        <p
+        <OdsNotification
           v-else
-          class="notification notification--info"
+          type="info"
         >
-          {{ t('message.organizations.empty') }}
-        </p>
+          <p>{{ t('message.organizations.empty') }}</p>
+        </OdsNotification>
       </div>
     </section>
   </OdsPage>

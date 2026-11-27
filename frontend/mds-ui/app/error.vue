@@ -46,7 +46,7 @@ import OdsBottomFooter from './components/footer/OdsBottomFooter.vue'
 import OdsPage from './components/OdsPage.vue'
 import OdsButton from './components/OdsButton.vue'
 
-// Shown instead of app.vue when a page throws, for example through ensureFound (app/utils/ensureFound.ts).
+// Shown instead of app.vue when a page throws, for example through ensureFound (app/utils/apiErrors.ts).
 const { error } = defineProps<{ error: NuxtError }>()
 
 const { t, locale } = useI18n()

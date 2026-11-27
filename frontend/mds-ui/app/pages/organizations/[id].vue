@@ -14,7 +14,7 @@ import { useOrganizations } from '~/composables/useOrganizations'
 import { getParentId, organizationLabel, type Organization, type OrganizationTreeNode } from '~/model/organizations'
 import { useDatasetCountByOrganization } from '~/composables/useDatasets'
 import { localize } from '~/utils/getCurrentTranslation'
-import { ensureFound } from '~/utils/ensureFound'
+import { ensureFound } from '~/utils/apiErrors'
 import { buildAgentIri } from '~/utils/iri'
 
 const route = useRoute()

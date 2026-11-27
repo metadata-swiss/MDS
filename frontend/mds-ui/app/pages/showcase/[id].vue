@@ -11,7 +11,7 @@ import { showcaseTypeLabel } from '~/utils/showcase-type'
 import { useThemes } from '~/composables/useDatasets'
 import { getDatasetsByIdentifier } from '~~/api-client/generated/iop-core'
 import { DcatApChV2DatasetAdapter } from '~/model/dataset/dcat-ap-ch-v2-dataset-adapter'
-import { ensureFound } from '~/utils/ensureFound'
+import { ensureFound } from '~/utils/apiErrors'
 
 const route = useRoute()
 const { locale, t } = useI18n()

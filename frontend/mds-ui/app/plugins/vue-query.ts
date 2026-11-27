@@ -10,7 +10,7 @@ import {
   QueryClient,
   VueQueryPlugin,
 } from '@tanstack/vue-query'
-import { isServiceUnavailable } from '~/utils/isServiceUnavailable'
+import { isServiceUnavailable } from '~/utils/apiErrors'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vueQueryState = useState<DehydratedState | null>('vue-query')

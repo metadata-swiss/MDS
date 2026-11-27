@@ -14,7 +14,7 @@ import { homePageBreadcrumb } from '~/composables/breadcrumbs'
 import SvgIcon from '~/components/SvgIcon.vue'
 import { useSeoMeta } from 'nuxt/app'
 import { clearDatasetSearchFromSessionStorage } from '~/utils/breadcrumb-session-storage'
-import { ensureAvailable } from '~/utils/ensureFound'
+import { ensureAvailable } from '~/utils/apiErrors'
 import { DcatApChV2DatasetAdapter } from '~/model/dataset/dcat-ap-ch-v2-dataset-adapter'
 import { syncFacetsFromRoute, useActiveFacets, useFacets, useFacetSync } from '~/composables/useFacets'
 

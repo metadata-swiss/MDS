@@ -17,7 +17,7 @@ import { DcatApChV2DatasetAdapter } from '~/model/dataset/dcat-ap-ch-v2-dataset-
 import { useSeoMeta } from 'nuxt/app'
 import OdsTagList from '~/components/dataset-detail/OdsTagList.vue'
 import OdsItemKind from '~/components/dataset-detail/OdsItemKind.vue'
-import { ensureFound } from '~/utils/ensureFound'
+import { ensureFound } from '~/utils/apiErrors'
 
 // Loaded only on this page and only when a preview is shown: it brings the table and chart libraries.
 const OdsPreview = defineAsyncComponent(() => import('~/components/dataset-detail/OdsPreview.vue'))

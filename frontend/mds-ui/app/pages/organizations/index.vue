@@ -18,7 +18,7 @@ import {
 import { getParentId, organizationLabel, type Organization, type OrganizationTreeNode } from '~/model/organizations'
 import { useOrganizationSearch, organizationFacets } from '~/composables/useOrganizations'
 import { useDatasetCountByOrganization } from '~/composables/useDatasets'
-import { ensureAvailable } from '~/utils/ensureFound'
+import { ensureAvailable } from '~/utils/apiErrors'
 
 const { t, locale } = useI18n()
 const router = useRouter()
